@@ -1,0 +1,7 @@
+.venv
+poetry.lock
+
+# ignora todos arquivos excel
+*.xlsx
+*.xlsm
+

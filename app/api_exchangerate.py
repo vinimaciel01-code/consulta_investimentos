@@ -2,11 +2,9 @@
 Busca as cotações na API da exchangerate
 API: https://exchangerate.host
 """
-
 import datetime as dt
-
-import pandas as pd
 import requests
+import pandas as pd
 
 from app.utils.data_functions import converte_datetime
 
@@ -29,27 +27,27 @@ def valida_moeda(moeda):
             + ''.join(str(x + ',') for x in lista_simbols)
             + ')'
         )
-    return moeda
+    else:
+        return moeda
 
 
-def get_rates(valor, moeda_base, moeda_destino, dt1, dt2):
+def get_rates(valor, moeda_base, moeda_destino, data_inicio, data_fim):
 
     """
-    Consulta a taxa de câmbio das moedas informadas.
-    @valor: quantidade de moedas que irei converter
-    @moeda_base: moeda que quero converter
-    @moeda_destino: moeda para a qual quero converter
-    @dt1: formato 'DD/MM/AAAA'
-    @dt2: formato 'DD/MM/AAAA'
-    @return: a cotação de uma moeda, entre duas datas.
+    Retorna a cotação de uma moeda, entre duas datas.
+    Valor: valor da moeda_base que irei converter
+    Moeda_base: moeda que quero converter
+    Moeda_destino: moeda para a qual quero converter
+    Data_inicio: formato 'DD/MM/AAAA'
+    Data_fim: formato 'DD/MM/AAAA'
     """
 
     # valida: datas informadas
-    dt1 = converte_datetime(dt1)
+    dt1 = converte_datetime(data_inicio)
     if dt1 == 'Erro':
         return "Erro na data de início. Formato 'DD/MM/AAAA'"
 
-    dt2 = converte_datetime(dt2)
+    dt2 = converte_datetime(data_fim)
     if dt2 == 'Erro':
         return "Erro na data de fim. Formato 'DD/MM/AAAA'"
 
@@ -74,25 +72,28 @@ def get_rates(valor, moeda_base, moeda_destino, dt1, dt2):
     while True:
 
         # set datas: a API retorna apenas a cotação para 365 dias
+
         if dt_max == dt2:
             break
         if dt_max != '':
             dt1 = dt_max + dt.timedelta(days=1)
 
-        if (dt2 - dt1).days > 365:
+        dt_dif = (dt2 - dt1).days
+        if dt_dif > 365:
             dt_max = dt1 + dt.timedelta(days=365)
         else:
             dt_max = dt2
 
         # requests
         # Permite que forneça os argumentos (params) como um dicionário
+        url = r'https://api.exchangerate.host/timeseries'
         payload = {
             'base': moeda_base,
             'amount': valor,
             'start_date': dt1,
             'end_date': dt_max,
         }
-        response = requests.get(r'https://api.exchangerate.host/timeseries', params=payload)
+        response = requests.get(url, params=payload)
         data = response.json()
 
         # armazenar os data
@@ -104,15 +105,21 @@ def get_rates(valor, moeda_base, moeda_destino, dt1, dt2):
             moeda_dados[moeda_data] = moeda_rate
 
         # clean data
-        pd_data = pd.DataFrame.from_records(data=moeda_dados, index=[0]).transpose()
+        pd_data = pd.DataFrame.from_records(
+            data=moeda_dados, index=[0]
+        ).transpose()
         pd_data.columns = [str(valor) + moeda_base + ':' + moeda_destino]
 
         # reunir com os outros data
         moeda_historico = pd.concat([moeda_historico, pd_data], axis=0)
-        moeda_historico.sort_index(axis=0, ascending=True, inplace=True)  # ascending para o PROCV verdadeiro funcionar no excel
+        moeda_historico.sort_index(
+            axis=0, ascending=True, inplace=True
+        )  # ascending para o PROCV verdadeiro funcionar no excel
 
     moeda_historico.reset_index(inplace=True)
-    moeda_historico = moeda_historico.rename(columns={'index': 'Data'}, inplace=False)
+    moeda_historico = moeda_historico.rename(
+        columns={'index': 'Data'}, inplace=False
+    )
     moeda_historico['Data'] = pd.to_datetime(moeda_historico['Data'])
 
     return moeda_historico
