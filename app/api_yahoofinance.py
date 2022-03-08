@@ -16,6 +16,9 @@ warnings.simplefilter('ignore')  # para ignorar o aviso do read_excel
 def yahoo_cotacao(empresas, dt1, dt2):
     """
     Consulta às cotações pela API do yahoo Finance
+    @empresas: lista de empresas a consultar (Tickers). As brasileiras devem ter '.SA' no nome.
+    @dt1: data inicial da consulta
+    @dt2: data final da consulta
     """
 
     dt1 = converte_datetime(dt1)
@@ -28,9 +31,16 @@ def yahoo_cotacao(empresas, dt1, dt2):
 
     lst = pd.DataFrame({'Date': []})
     for empresa in empresas:
-        temp = web.DataReader(
-            empresa, data_source='yahoo', start=dt1, end=dt2
-        )
+        try:
+            temp = web.DataReader(
+                empresa, 
+                data_source='yahoo', 
+                start=dt1, 
+                end=dt2)
+        except:
+            print(f'Empresa {empresa} não listada.')
+            continue
+
         temp.rename(columns={'Adj Close': empresa}, inplace=True)
         temp = round(temp[empresa], 2)
         lst = pd.merge(temp, lst, on='Date', how='outer')
@@ -44,6 +54,9 @@ def yahoo_cotacao(empresas, dt1, dt2):
 def yahoo_eventos(empresas, dt1, dt2):
     """
     Consulta aos eventos acionarios pela API do yahoo Finance
+    @empresas: lista de empresas a consultar (Tickers). As brasileiras devem ter '.SA' no nome.
+    @dt1: data inicial da consulta
+    @dt2: data final da consulta
     """
 
     dt1 = converte_datetime(dt1)
@@ -56,12 +69,16 @@ def yahoo_eventos(empresas, dt1, dt2):
 
     lst = pd.DataFrame({})
     for empresa in empresas:
-        temp = web.DataReader(
+        try:
+            temp = web.DataReader(
             empresa,
             data_source='yahoo-actions',
             start=dt1,
-            end=dt2,
-        )
+            end=dt2)
+        except:
+            print(f'Empresa {empresa} não listada.')
+            continue
+
         temp.insert(0, 'empresa', empresa)
         lst = pd.concat([temp, lst], axis=0)
 
@@ -72,6 +89,9 @@ def yahoo_eventos(empresas, dt1, dt2):
 def yahoo_dividendos(empresas, dt1, dt2):
     """
     Consulta aos dividendos pela API do yahoo Finance
+    @empresas: lista de empresas a consultar (Tickers). As brasileiras devem ter '.SA' no nome.
+    @dt1: data inicial da consulta
+    @dt2: data final da consulta
     """
 
     dt1 = converte_datetime(dt1)
@@ -84,12 +104,16 @@ def yahoo_dividendos(empresas, dt1, dt2):
 
     lst = pd.DataFrame({})
     for empresa in empresas:
-        temp = web.DataReader(
-            empresa,
-            data_source='yahoo-dividends',
-            start=dt1,
-            end=dt2,
-        )
+        try:
+            temp = web.DataReader(
+                empresa,
+                data_source='yahoo-dividends',
+                start=dt1,
+                end=dt2)
+        except:
+            print(f'Empresa {empresa} não listada.')
+            continue
+        
         temp.insert(0, 'empresa', empresa)
         lst = pd.concat([temp, lst], axis=0)
 

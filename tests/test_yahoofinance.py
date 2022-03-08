@@ -1,6 +1,6 @@
 import app.api_yahoofinance as yahoo
 
-empresas = ['HGBS11'] #,'NEXISTE']
+empresas = ['HGBS11.SA', 'NEXISTE']
 dt1 = '01/01/2021'
 dt2 = '31/12/2021'
 
