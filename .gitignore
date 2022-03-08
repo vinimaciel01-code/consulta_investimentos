@@ -25,7 +25,6 @@
 
 __pycache__/
 .venv
-poetry.lock
 
 # ignora todos arquivos excel
 *.xlsx
