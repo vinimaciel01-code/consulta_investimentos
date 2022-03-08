@@ -41,7 +41,7 @@ def get_rates(valor, moeda_base, moeda_destino, dt1, dt2):
     @moeda_destino: moeda para a qual quero converter
     @dt1: formato 'DD/MM/AAAA'
     @dt2: formato 'DD/MM/AAAA'
-    @return: a cotação de uma moeda, entre duas datas.
+    @return: pd.DataFrame da cotação de uma moeda, entre duas datas.
     """
 
     # valida: datas informadas

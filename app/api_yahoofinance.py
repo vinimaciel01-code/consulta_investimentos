@@ -8,7 +8,7 @@ import warnings
 import pandas as pd
 from pandas_datareader import data as web
 
-import app.utils.data_functions as datavalida
+from app.utils.data_functions import converte_datetime
 
 warnings.simplefilter('ignore')  # para ignorar o aviso do read_excel
 
@@ -18,8 +18,13 @@ def yahoo_cotacao(empresas, dt1, dt2):
     Consulta às cotações pela API do yahoo Finance
     """
 
-    if datavalida.valida(dt1) is False or datavalida.valida(dt2) is False:
-        return 'Yahoo Finance cotação: Erro na data.'
+    dt1 = converte_datetime(dt1)
+    if dt1 == 'Erro':
+        return "Erro na data de início. Formato 'DD/MM/AAAA'"
+
+    dt2 = converte_datetime(dt2)
+    if dt2 == 'Erro':
+        return "Erro na data de fim. Formato 'DD/MM/AAAA'"
 
     lst = pd.DataFrame({'Date': []})
     for empresa in empresas:
@@ -41,8 +46,13 @@ def yahoo_eventos(empresas, dt1, dt2):
     Consulta aos eventos acionarios pela API do yahoo Finance
     """
 
-    if datavalida.valida(dt1) is False or datavalida.valida(dt2) is False:
-        return 'Yahoo Finance eventos: Erro na data.'
+    dt1 = converte_datetime(dt1)
+    if dt1 == 'Erro':
+        return "Erro na data de início. Formato 'DD/MM/AAAA'"
+
+    dt2 = converte_datetime(dt2)
+    if dt2 == 'Erro':
+        return "Erro na data de fim. Formato 'DD/MM/AAAA'"
 
     lst = pd.DataFrame({})
     for empresa in empresas:
@@ -64,8 +74,13 @@ def yahoo_dividendos(empresas, dt1, dt2):
     Consulta aos dividendos pela API do yahoo Finance
     """
 
-    if datavalida.valida(dt1) is False or datavalida.valida(dt2) is False:
-        return 'Yahoo Finance eventos: Erro na data.'
+    dt1 = converte_datetime(dt1)
+    if dt1 == 'Erro':
+        return "Erro na data de início. Formato 'DD/MM/AAAA'"
+
+    dt2 = converte_datetime(dt2)
+    if dt2 == 'Erro':
+        return "Erro na data de fim. Formato 'DD/MM/AAAA'"
 
     lst = pd.DataFrame({})
     for empresa in empresas:
