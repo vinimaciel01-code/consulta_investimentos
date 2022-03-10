@@ -1,5 +1,6 @@
 """
-Acessa as informações de FII no site da B3
+Acessa as informações de FII no site da B3.
+
 Navega para a aba de eventos corporativos
 - Baixa a tabela de Proventos em dinheiro
 """
@@ -16,15 +17,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 def webscrap_b3fii(empresas):
+    """Abre o link de procura da B3 e procura infos dos FIIs requeridos.
 
-    """
     @empresas: lista das empresas FII que quero procurar
-    @return: pd.DataFrame
-
-    Nota: O site da B3 possui um Spinner de carregamento que fica presente até a página inteira estar carregada.
-    Ele fica presente depois de clicar em algum link.
+    return: pd.DataFrame
     """
-
     lista_empresas = []
     for empresa in empresas:
         if '11' in empresa:
@@ -55,13 +52,13 @@ def webscrap_b3fii(empresas):
         elemento = wdw.until(ec.element_to_be_clickable(locator))
         driver.switch_to.frame(elemento)
 
-        locator = (By.XPATH, '//*[@id="palavrachave"]') #insere empresa
+        locator = (By.XPATH, '//*[@id="palavrachave"]')  # insere empresa
         elemento = wdw.until(ec.element_to_be_clickable(locator))
         for _ in range(20):
             elemento.send_keys(Keys.BACKSPACE)
         elemento.send_keys(empresa)
 
-        locator = (By.XPATH, '//*[@id="palavrachave"]') #insere ENTER
+        locator = (By.XPATH, '//*[@id="palavrachave"]')  # insere ENTER
         driver.find_element(*locator).send_keys(Keys.ENTER)
 
         time.sleep(2)  # espera carregar
@@ -91,9 +88,9 @@ def webscrap_b3fii(empresas):
         locator = (By.ID, 'accordionBody')
         elemento = wdw.until(ec.element_to_be_clickable(locator))
 
-        if 'show' not in elemento.get_attribute('class').split(): 
+        if 'show' not in elemento.get_attribute('class').split():
             print('elemento não expandido. Empresa: ', empresa)
-            elemento.click() # verifica se proventos está expandido
+            elemento.click()  # verifica se proventos está expandido
 
         table = Bs(driver.page_source, 'html.parser').find_all('table')[0]
 

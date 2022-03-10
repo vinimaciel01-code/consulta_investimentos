@@ -1,17 +1,15 @@
-"""
-Funções de manipulação e testes em Datas
-"""
+"""Funções de manipulação e testes em Datas."""
 
 import datetime as dt
 
 
 def valida(data):
     """
-    Valida se a data é válida (Date ou Datetime)
+    Valida se a data é válida (Date ou Datetime).
+
     @param data: string ou datetime
     return: boolean
     """
-
     if isinstance(data, dt.datetime):
         return True
 
@@ -22,12 +20,11 @@ def valida(data):
 
 
 def converte_datetime(data):
-    """
-    Retorna a data convertida para 'datetime.datetime'
+    """Retorna a data convertida para 'datetime.datetime'.
+
     @param data: string ou datetime formatada
     return: data datetime.datetime ou msg de 'Erro'
     """
-
     if isinstance(data, dt.datetime):
         # print('instancia de datetime.datetime: OK')
         return data

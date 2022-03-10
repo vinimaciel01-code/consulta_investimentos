@@ -1,8 +1,10 @@
 """
-API: yahoo finance
-Busca as informações da lista de empresas, entre duas datas
-"""
+Busca as informações da lista de empresas, entre duas datas.
 
+- yahoo yahoo_cotacao
+- yahoo yahoo_eventos
+- yahoo yahoo_dividendos
+"""
 import warnings
 
 import pandas as pd
@@ -14,13 +16,12 @@ warnings.simplefilter('ignore')  # para ignorar o aviso do read_excel
 
 
 def yahoo_cotacao(empresas, dt1, dt2):
-    """
-    Consulta às cotações pela API do yahoo Finance
-    @empresas: lista de empresas a consultar (Tickers). As brasileiras devem ter '.SA' no nome.
+    """Consulta às cotações pela API do yahoo Finance.
+
+    @empresas: lista de empresas (Tickers). Brasileiras devem ter '.SA'.
     @dt1: data inicial da consulta
     @dt2: data final da consulta
     """
-
     dt1 = converte_datetime(dt1)
     if dt1 == 'Erro':
         return "Erro na data de início. Formato 'DD/MM/AAAA'"
@@ -33,9 +34,9 @@ def yahoo_cotacao(empresas, dt1, dt2):
     for empresa in empresas:
         try:
             temp = web.DataReader(
-                empresa, 
-                data_source='yahoo', 
-                start=dt1, 
+                empresa,
+                data_source='yahoo',
+                start=dt1,
                 end=dt2)
         except:
             print(f'Empresa {empresa} não listada.')
@@ -52,13 +53,12 @@ def yahoo_cotacao(empresas, dt1, dt2):
 
 
 def yahoo_eventos(empresas, dt1, dt2):
-    """
-    Consulta aos eventos acionarios pela API do yahoo Finance
-    @empresas: lista de empresas a consultar (Tickers). As brasileiras devem ter '.SA' no nome.
+    """Consulta aos eventos acionarios pela API do yahoo Finance.
+
+    @empresas: lista de empresas (Tickers). Brasileiras devem ter '.SA'.
     @dt1: data inicial da consulta
     @dt2: data final da consulta
     """
-
     dt1 = converte_datetime(dt1)
     if dt1 == 'Erro':
         return "Erro na data de início. Formato 'DD/MM/AAAA'"
@@ -70,11 +70,10 @@ def yahoo_eventos(empresas, dt1, dt2):
     lst = pd.DataFrame({})
     for empresa in empresas:
         try:
-            temp = web.DataReader(
-            empresa,
-            data_source='yahoo-actions',
-            start=dt1,
-            end=dt2)
+            temp = web.DataReader(empresa,
+                                  data_source='yahoo-actions',
+                                  start=dt1,
+                                  end=dt2)
         except:
             print(f'Empresa {empresa} não listada.')
             continue
@@ -87,13 +86,12 @@ def yahoo_eventos(empresas, dt1, dt2):
 
 
 def yahoo_dividendos(empresas, dt1, dt2):
-    """
-    Consulta aos dividendos pela API do yahoo Finance
-    @empresas: lista de empresas a consultar (Tickers). As brasileiras devem ter '.SA' no nome.
+    """Consulta aos dividendos pela API do yahoo Finance.
+
+    @empresas: lista de empresas (Tickers). Brasileiras devem ter '.SA'.
     @dt1: data inicial da consulta
     @dt2: data final da consulta
     """
-
     dt1 = converte_datetime(dt1)
     if dt1 == 'Erro':
         return "Erro na data de início. Formato 'DD/MM/AAAA'"
@@ -113,7 +111,7 @@ def yahoo_dividendos(empresas, dt1, dt2):
         except:
             print(f'Empresa {empresa} não listada.')
             continue
-        
+
         temp.insert(0, 'empresa', empresa)
         lst = pd.concat([temp, lst], axis=0)
 

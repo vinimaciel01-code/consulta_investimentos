@@ -1,7 +1,7 @@
 """
-Acessa a área de investidor privado do site da B3 (https://www.investidor.b3.com.br/)
-Faz o login manualmente
-Baixa as informações de todos os ativos
+Acessa a área de investidor do site da B3 (https://www.investidor.b3.com.br/).
+
+Faz o login manualmente e baixa as informações de todos os ativos
 """
 
 import datetime as dt
@@ -21,7 +21,13 @@ from app.utils.data_functions import converte_datetime
 
 
 def webscrap_b3investidor(path_download, dt1, dt2):
+    """
+    Faz o login na área privada de investidor no site da B3.
 
+    @param path_download: caminho da pasta de Downloads
+    @param dt1: data inicial da procura dos dados
+    @param dt2: data final da procura dos dados
+    """
     dt1 = converte_datetime(dt1)
     if dt1 == 'Erro':
         return "Erro na data de início. Formato 'DD/MM/AAAA'"
@@ -76,7 +82,14 @@ def webscrap_b3investidor(path_download, dt1, dt2):
 
 
 def movimentacao(driver, path_download, dt1, dt2):
+    """
+    Baixa o histórico de movimentações de ações.
 
+    @param driver: driver selenium da página
+    @param path_download: caminho da pasta de Downloads
+    @param dt1: data inicial da procura dos dados
+    @param dt2: data final da procura dos dados
+    """
     wdw = WebDriverWait(driver, 15)
 
     # navegacao para a aba de movimentação
@@ -113,7 +126,7 @@ def movimentacao(driver, path_download, dt1, dt2):
             elemento.send_keys(Keys.BACKSPACE)
         elemento.send_keys(dt_min.strftime('%d/%m/%Y'))
 
-        # volta à data final para aplicar a conferencia do campo na data inicial
+        # volta à data final -> aplica a conferencia do campo na data inicial
         locator = (By.XPATH, "//input[@data-placeholder='Data final']")
         elemento = wdw.until(ec.element_to_be_clickable(locator)).click()
 
@@ -159,10 +172,13 @@ def movimentacao(driver, path_download, dt1, dt2):
 
 def posicao(driver):
     """
-    Aba de posição
-    Baixa a tabela de ação e de FII
-    """
+    Baixa a posição atual de todos os ativos.
 
+    @param driver: driver selenium da página
+    @param path_download: caminho da pasta de Downloads
+    @param dt1: data inicial da procura dos dados
+    @param dt2: data final da procura dos dados
+    """
     wdw = WebDriverWait(driver, 15)
     dados = pd.DataFrame({})
 

@@ -1,5 +1,6 @@
 """
-Busca as cotações na API da exchangerate
+Busca as cotações na API da exchangerate.
+
 API: https://exchangerate.host
 """
 
@@ -12,8 +13,10 @@ from app.utils.data_functions import converte_datetime
 
 
 def valida_moeda(moeda):
-    """Valida a moeda e converte para uppercase"""
+    """Valida a moeda e converte para uppercase.
 
+    @params moeda: moeda a converter
+    """
     url = 'https://api.exchangerate.host/symbols'
     response = requests.get(url)
     data = response.json()
@@ -33,9 +36,8 @@ def valida_moeda(moeda):
 
 
 def get_rates(valor, moeda_base, moeda_destino, dt1, dt2):
+    """Consulta a taxa de câmbio das moedas informadas.
 
-    """
-    Consulta a taxa de câmbio das moedas informadas.
     @valor: quantidade de moedas que irei converter
     @moeda_base: moeda que quero converter
     @moeda_destino: moeda para a qual quero converter
@@ -43,7 +45,6 @@ def get_rates(valor, moeda_base, moeda_destino, dt1, dt2):
     @dt2: formato 'DD/MM/AAAA'
     @return: pd.DataFrame da cotação de uma moeda, entre duas datas.
     """
-
     # valida: datas informadas
     dt1 = converte_datetime(dt1)
     if dt1 == 'Erro':
@@ -92,7 +93,8 @@ def get_rates(valor, moeda_base, moeda_destino, dt1, dt2):
             'start_date': dt1,
             'end_date': dt_max,
         }
-        response = requests.get(r'https://api.exchangerate.host/timeseries', params=payload)
+        response = requests.get(r'https://api.exchangerate.host/timeseries',
+                                params=payload)
         data = response.json()
 
         # armazenar os data
@@ -104,15 +106,18 @@ def get_rates(valor, moeda_base, moeda_destino, dt1, dt2):
             moeda_dados[moeda_data] = moeda_rate
 
         # clean data
-        pd_data = pd.DataFrame.from_records(data=moeda_dados, index=[0]).transpose()
+        pd_data = pd.DataFrame.from_records(data=moeda_dados,
+                                            index=[0]).transpose()
         pd_data.columns = [str(valor) + moeda_base + ':' + moeda_destino]
 
         # reunir com os outros data
         moeda_historico = pd.concat([moeda_historico, pd_data], axis=0)
-        moeda_historico.sort_index(axis=0, ascending=True, inplace=True)  # ascending para o PROCV verdadeiro funcionar no excel
+        moeda_historico.sort_index(axis=0, ascending=True, inplace=True)
+        # ascending para o PROCV verdadeiro funcionar no excel
 
     moeda_historico.reset_index(inplace=True)
-    moeda_historico = moeda_historico.rename(columns={'index': 'Data'}, inplace=False)
+    moeda_historico = moeda_historico.rename(columns={'index': 'Data'},
+                                             inplace=False)
     moeda_historico['Data'] = pd.to_datetime(moeda_historico['Data'])
 
     return moeda_historico
