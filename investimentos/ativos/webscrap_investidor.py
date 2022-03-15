@@ -16,17 +16,18 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from app.utils.arquivo import download_concluido
-from app.utils.data_functions import converte_datetime
+from utils.arquivo import download_concluido
+from utils.data_functions import converte_datetime
 
 
-def webscrap_b3investidor(path_download, dt1, dt2):
+def scrap_investidor(path_download, dt1, dt2):
     """
     Faz o login na área privada de investidor no site da B3.
 
     @param path_download: caminho da pasta de Downloads
     @param dt1: data inicial da procura dos dados
     @param dt2: data final da procura dos dados
+    Return: dados da posição, dados das movimentações
     """
     dt1 = converte_datetime(dt1)
     if dt1 == 'Erro':
@@ -47,7 +48,7 @@ def webscrap_b3investidor(path_download, dt1, dt2):
     driver.get('https://www.investidor.b3.com.br/')
 
     # espera aparecer o elemento da senha
-    locator = (By.ID, 'extension_DocInput')
+    locator = (By.ID, 'DOC_INPUT')
     wdw.until(ec.element_to_be_clickable(locator))
     print('Página carregada com sucesso')
     print('Faça o Login e responda à pergunta de segurança.')

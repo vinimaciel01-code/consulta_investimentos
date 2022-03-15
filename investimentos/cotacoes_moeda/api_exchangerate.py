@@ -9,7 +9,12 @@ import datetime as dt
 import pandas as pd
 import requests
 
-from app.utils.data_functions import converte_datetime
+from utils.data_functions import converte_datetime
+
+
+def imprime_teste():
+    """temporário para teste. Deletar no futuro."""
+    print('hello_teste')
 
 
 def valida_moeda(moeda):
@@ -35,7 +40,7 @@ def valida_moeda(moeda):
     return moeda
 
 
-def get_rates(valor, moeda_base, moeda_destino, dt1, dt2):
+def get_rates(valor, moeda_base, moeda_destino, dt1=None, dt2=None):
     """Consulta a taxa de câmbio das moedas informadas.
 
     @valor: quantidade de moedas que irei converter
@@ -46,10 +51,14 @@ def get_rates(valor, moeda_base, moeda_destino, dt1, dt2):
     @return: pd.DataFrame da cotação de uma moeda, entre duas datas.
     """
     # valida: datas informadas
+    if dt1 is None:
+        dt1 = dt.datetime.today()
     dt1 = converte_datetime(dt1)
     if dt1 == 'Erro':
         return "Erro na data de início. Formato 'DD/MM/AAAA'"
 
+    if dt2 is None or dt2 < dt1:
+        dt2 = dt1
     dt2 = converte_datetime(dt2)
     if dt2 == 'Erro':
         return "Erro na data de fim. Formato 'DD/MM/AAAA'"

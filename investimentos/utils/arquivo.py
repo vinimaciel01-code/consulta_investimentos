@@ -3,10 +3,6 @@
 import time
 from pathlib import Path
 
-# import os
-# import pandas as pd
-# import numpy as np
-
 
 def download_concluido(directory):
     """Espera downloads serem concluídos."""

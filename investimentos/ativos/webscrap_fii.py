@@ -16,7 +16,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def webscrap_b3fii(empresas):
+def scrap_fii(empresas):
     """Abre o link de procura da B3 e procura infos dos FIIs requeridos.
 
     @empresas: lista das empresas FII que quero procurar
@@ -31,7 +31,7 @@ def webscrap_b3fii(empresas):
     if len(lista_empresas) == 0:
         return []
 
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome()  # add: catch erro de drive
     driver.maximize_window()
     wdw = WebDriverWait(driver, 30000)
 

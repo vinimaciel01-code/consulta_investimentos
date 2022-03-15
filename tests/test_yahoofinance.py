@@ -1,9 +1,13 @@
-import app.api_yahoofinance as yahoo
 
-empresas = ['HGBS11.SA', 'NEXISTE']
-dt1 = '01/01/2021'
-dt2 = '31/12/2021'
+from investimentos import ativos
 
-dados = yahoo.yahoo_cotacao(empresas, dt1, dt2)
-dados = yahoo.yahoo_dividendos(empresas, dt1, dt2)
-dados = yahoo.yahoo_eventos(empresas, dt1, dt2)
+
+dt1 = '01/01/2020'
+dt2 = '01/02/2022'
+lista_ativos = ['IRBR3.SA', 'HGBS11.SA']
+
+"Testando ativos"
+dados = ativos.yahoo_cotacao(lista_ativos, dt1, dt2)
+dados = ativos.yahoo_eventos(lista_ativos, dt1, dt2)
+dados = ativos.yahoo_dividendos(lista_ativos, dt1, dt2)
+print(dados)

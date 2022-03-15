@@ -10,7 +10,7 @@ import warnings
 import pandas as pd
 from pandas_datareader import data as web
 
-from app.utils.data_functions import converte_datetime
+from utils.data_functions import converte_datetime
 
 warnings.simplefilter('ignore')  # para ignorar o aviso do read_excel
 
