@@ -9,12 +9,7 @@ import datetime as dt
 import pandas as pd
 import requests
 
-from utils.data_functions import converte_datetime
-
-
-def imprime_teste():
-    """temporário para teste. Deletar no futuro."""
-    print('hello_teste')
+from investimentos.utils.data_functions import converte_datetime
 
 
 def valida_moeda(moeda):

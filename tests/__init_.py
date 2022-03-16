@@ -1,1 +1,1 @@
-import *
+# pytest --disable-pytest-warnings

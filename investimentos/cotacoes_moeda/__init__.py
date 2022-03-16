@@ -1,1 +1,1 @@
-from cotacoes_moeda.api_exchangerate import *
+from .api_exchangerate import get_rates

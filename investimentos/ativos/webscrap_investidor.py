@@ -16,8 +16,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from utils.arquivo import download_concluido
-from utils.data_functions import converte_datetime
+from investimentos.utils.arquivo import download_concluido
+from investimentos.utils.data_functions import converte_datetime
 
 
 def scrap_investidor(path_download, dt1, dt2):
