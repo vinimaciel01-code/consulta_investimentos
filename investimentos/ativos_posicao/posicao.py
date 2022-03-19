@@ -20,7 +20,7 @@ from investimentos.utils.arquivo import download_concluido
 from investimentos.utils.data_functions import converte_datetime
 
 
-def scrap_investidor(path_download, dt1, dt2):
+def consulta_posicao(path_download, dt1, dt2):
     """
     Faz o login na área privada de investidor no site da B3.
 
@@ -72,17 +72,17 @@ def scrap_investidor(path_download, dt1, dt2):
     wdw.until(ec.element_to_be_clickable(locator)).click()
 
     # dados de movimentação
-    dados_mov = movimentacao(driver, path_download, dt1, dt2)
+    dados_mov = scrap_movimentacao(driver, path_download, dt1, dt2)
 
     # dados de posição
-    dados_pos = posicao(driver)
+    dados_pos = scrap_posicao(driver)
 
     # Finaliza
     driver.quit()
     return dados_pos, dados_mov
 
 
-def movimentacao(driver, path_download, dt1, dt2):
+def scrap_movimentacao(driver, path_download, dt1, dt2):
     """
     Baixa o histórico de movimentações de ações.
 
@@ -171,7 +171,7 @@ def movimentacao(driver, path_download, dt1, dt2):
     return dados_mov
 
 
-def posicao(driver):
+def scrap_posicao(driver):
     """
     Baixa a posição atual de todos os ativos.
 
@@ -204,7 +204,8 @@ def posicao(driver):
 
     # Formata variaveis
     dados_acao['Valor atualizado'] = [
-        x.replace('Ver mais', '') for x in dados_acao['Valor atualizado']]
+        x.replace('Ver mais', '') for x in dados_acao['Valor atualizado']
+    ]
     dados_acao = dados_acao.drop('', axis=1)
 
     # Tabela de FII
@@ -219,7 +220,8 @@ def posicao(driver):
 
     # Formata variaveis
     dados_fii['Valor atualizado'] = [
-        x.replace('Ver mais', '') for x in dados_fii['Valor atualizado']]
+        x.replace('Ver mais', '') for x in dados_fii['Valor atualizado']
+    ]
     dados_fii = dados_fii.drop('', axis=1)
 
     # une com a lista acumulada
@@ -230,6 +232,6 @@ def posicao(driver):
 
 # if __name__ == '__main__':
 
-    # dt1 = dt.datetime(2019, 11, 1)
-    # dt2 = dt.datetime(2020, 12, 31)
-    # path_download = r'C:\Users\vinim\Downloads'
+# dt1 = dt.datetime(2019, 11, 1)
+# dt2 = dt.datetime(2020, 12, 31)
+# path_download = r'C:\Users\vinim\Downloads'

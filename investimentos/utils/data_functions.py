@@ -4,11 +4,10 @@ import datetime as dt
 
 
 def valida(data):
-    """
-    Valida se a data é válida (Date ou Datetime).
+    """Valida se a data é válida (Date ou Datetime).
 
     @param data: string ou datetime
-    return: boolean
+    @return: boolean
     """
     if isinstance(data, dt.datetime):
         return True
@@ -19,23 +18,43 @@ def valida(data):
     return False
 
 
+def valida_duas_datas(dt1, dt2):
+    """Recebe duas datas. Retorna as datas corrigidas ou erro.
+
+    @param dt1: data inicial
+    @param dt2: data final
+    @return: dt1, dt2 OU erro
+    """
+    if dt1 is None:
+        dt1 = dt.datetime.today()
+    dt1 = converte_datetime(dt1)
+
+    if dt2 is None or dt2 < dt1:
+        dt2 = dt1
+    dt2 = converte_datetime(dt2)
+
+    if dt1 < dt.datetime(2000, 1, 1):
+        dt1 = dt.datetime(2000, 1, 1)
+    if dt2 > dt.datetime.today():
+        dt2 = dt.datetime.today()
+
+    return dt1, dt2
+
+
 def converte_datetime(data):
     """Retorna a data convertida para 'datetime.datetime'.
 
     @param data: string ou datetime formatada
-    return: data datetime.datetime ou msg de 'Erro'
+    @return: dt.datetime
     """
     if isinstance(data, dt.datetime):
-        # print('instancia de datetime.datetime: OK')
         return data
 
     if isinstance(data, dt.date):
-        # print('instancia de datetime.date: converter para datetime')
         return dt.datetime.combine(data, dt.datetime.min.time())
 
     if isinstance(data, str):
         try:
-            # print('instancia de string: convertendo para datetime.datetime')
             return dt.datetime.strptime(data, '%d/%m/%Y')
         except Exception as erro:
             raise ValueError(
@@ -47,7 +66,9 @@ def converte_datetime(data):
 
 if __name__ == '__main__':
 
-    data_teste = dt.datetime.today().date()
-    isinstance(data_teste, dt.date)
-    print(valida(data_teste))
-    print(converte_datetime(data_teste))
+    dt1 = dt.datetime(2020, 1, 1)
+    dt2 = dt.datetime(2022, 1, 1)
+
+    print(valida(dt1))
+    print(isinstance(converte_datetime(dt1), dt.datetime))
+    print(valida_duas_datas(dt1, dt2))

@@ -1,9 +1,5 @@
-from investimentos.ativos.api_yahoofinance import (
-        yahoo_cotacao, yahoo_dividendos, yahoo_eventos,
-        )
-
-from investimentos.ativos.webscrap_fii import scrap_fii
-
-from investimentos.ativos.webscrap_investidor import scrap_investidor
-
-from investimentos.cotacoes_moeda.api_exchangerate import get_rates
+from investimentos.ativos_cotacoes.cotacoes import consulta_cotacoes
+from investimentos.ativos_dividendos.dividendos import consulta_dividendos
+from investimentos.ativos_eventos.eventos import consulta_eventos
+from investimentos.ativos_posicao.posicao import consulta_posicao
+from investimentos.moeda_cotacao.moedas import consulta_moedas

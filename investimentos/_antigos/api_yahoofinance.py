@@ -34,10 +34,8 @@ def yahoo_cotacao(empresas, dt1, dt2):
     for empresa in empresas:
         try:
             temp = web.DataReader(
-                empresa,
-                data_source='yahoo',
-                start=dt1,
-                end=dt2)
+                empresa, data_source='yahoo', start=dt1, end=dt2
+            )
         except:
             print(f'Empresa {empresa} não listada.')
             continue
@@ -70,10 +68,9 @@ def yahoo_eventos(empresas, dt1, dt2):
     lst = pd.DataFrame({})
     for empresa in empresas:
         try:
-            temp = web.DataReader(empresa,
-                                  data_source='yahoo-actions',
-                                  start=dt1,
-                                  end=dt2)
+            temp = web.DataReader(
+                empresa, data_source='yahoo-actions', start=dt1, end=dt2
+            )
         except:
             print(f'Empresa {empresa} não listada.')
             continue
@@ -104,10 +101,8 @@ def yahoo_dividendos(empresas, dt1, dt2):
     for empresa in empresas:
         try:
             temp = web.DataReader(
-                empresa,
-                data_source='yahoo-dividends',
-                start=dt1,
-                end=dt2)
+                empresa, data_source='yahoo-dividends', start=dt1, end=dt2
+            )
         except:
             print(f'Empresa {empresa} não listada.')
             continue
