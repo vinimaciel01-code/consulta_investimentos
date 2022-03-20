@@ -1,9 +1,9 @@
 """
-Divendendos distribuidos das empresas listadas.
+Eventos acionários da lista de empresas: apenas do tipo Divendendos.
 
 - yahoo_dividendos: procura no site na API do Yahoo Finance.
-Este site, porém, não está apresentando os dividendos atuais dos FII. Portanto,
-estes serão consultados via WebScrapp diretamente no site da B3
+- site B3: a fonte anterior não está apresentando os dividendos atuais dos FII.
+ Portanto, estes serão consultados via WebScrapp diretamente no site da B3
 """
 import time
 import pandas as pd
@@ -21,16 +21,51 @@ from investimentos.utils.data_functions import converte_datetime
 
 def consulta_dividendos(empresas, dt1, dt2):
     """
-    Procura os dividendos das empresas selecionadas, no intervalo.
+    Procura os dividendos no site do Yahoo Finance.
 
+    Complementa com webscrapp das infos de FII.
     @empresas: lista de empresas (Tickers). Brasileiras devem ter '.SA'.
     @dt1: data inicial da consulta
     @dt2: data final da consulta
     @return: pd.DataFrame
     """
+    # dados de eventos do yahoo
+    # erro nos dados dos FII
     dados_yahoo = yahoo_dividendos(empresas, dt1, dt2)
-    dados_b3 = b3_site_fii(empresas)
+    dados_yahoo = dados_yahoo.rename(
+        columns={'empresa': 'Código', 'action': 'Tipo', 'value': 'Valor'}
+    )
 
+    # dados de eventos dos FII, na B3
+    dados_b3 = b3_site_fii(empresas)
+    dados_b3 = dados_b3.rename(
+        columns={
+            'Empresa': 'Código',
+            'Proventos': 'Tipo',
+            'Deliberado em': 'Deliberado',
+            'Negócios com até': 'Negociado',
+            'Início de Pagamento': 'Pagamento',
+            'Relativo a': 'Período',
+            'Valor (R$)': 'Valor',
+            'Código ISIN': 'ISIN',
+            'Observações': 'obs',
+        }
+    )
+    dados_b3 = dados_b3[
+        [
+            'Código',
+            'Tipo',
+            'Deliberado',
+            'Negociado',
+            'Pagamento',
+            'Período',
+            'Valor',
+            'ISIN',
+            'obs',
+        ]
+    ]
+
+    # reune
     dados_dividendos = pd.concat([dados_yahoo, dados_b3])
 
     return dados_dividendos
@@ -45,12 +80,7 @@ def yahoo_dividendos(empresas, dt1, dt2):
     @return: pd.DataFrame
     """
     dt1 = converte_datetime(dt1)
-    if dt1 == 'Erro':
-        return "Erro na data de início. Formato 'DD/MM/AAAA'"
-
     dt2 = converte_datetime(dt2)
-    if dt2 == 'Erro':
-        return "Erro na data de fim. Formato 'DD/MM/AAAA'"
 
     lst = pd.DataFrame({})
     for empresa in empresas:
@@ -97,9 +127,15 @@ def b3_site_fii(empresas):
         print(empresa)
 
         # url de procura do FII
-        driver.get(''.join(('https://www.b3.com.br/pt_br/produtos-e-servicos/',
-                            'negociacao/renda-variavel/',
-                            'fundos-de-investimentos/fii/fiis-listados/')))
+        driver.get(
+            ''.join(
+                (
+                    'https://www.b3.com.br/pt_br/produtos-e-servicos/',
+                    'negociacao/renda-variavel/',
+                    'fundos-de-investimentos/fii/fiis-listados/',
+                )
+            )
+        )
 
         # procura o FII
         locator = (By.ID, 'bvmf_iframe')
@@ -129,8 +165,12 @@ def b3_site_fii(empresas):
         # Navega para a aba de eventos corporativos
         locator = (
             By.XPATH,
-            ''.join(('//div[@id="divContainerIframeB3"]//',
-                    'a[contains(text(), "Eventos Corporativos")]'))
+            ''.join(
+                (
+                    '//div[@id="divContainerIframeB3"]//',
+                    'a[contains(text(), "Eventos Corporativos")]',
+                )
+            ),
         )
         elemento = wdw.until(ec.element_to_be_clickable(locator))
         driver.execute_script('arguments[0].click();', elemento)
@@ -169,9 +209,9 @@ def b3_site_fii(empresas):
     driver.quit()
     return dados
 
+# import datetime as dt
 # if __name__ == '__main__':
-
-#     lista = ['MDIA3.SA','ITUB3.SA', 'EQIX', 'DLR']
-#     data_inicial = dt.datetime(2010, 1, 1)
-#     data_final = dt.datetime.today()
-#     lista = yahoo_cotacao(lista, data_inicial, data_final)
+#     empresas = ['MDIA3.SA', 'HGBS11.SA', 'AAPL']
+#     dt1 = dt.datetime(2020, 1, 1)
+#     dt2 = dt.datetime.today()
+#     lista = yahoo_dividendos(empresas, dt1, dt2)
