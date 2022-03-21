@@ -99,12 +99,19 @@ def yahoo_eventos(empresas, dt1, dt2):
 
     lst = pd.DataFrame({})
     for empresa in empresas:
-        try:
-            temp = web.DataReader(
-                empresa, data_source='yahoo-actions', start=dt1, end=dt2
-            )
-        except:
-            print(f'Empresa {empresa} não listada.')
+
+        temp = pd.DataFrame({})
+        for tentativas in range(1,4):
+            try:
+                temp = web.DataReader(
+                    empresa, data_source='yahoo-actions',
+                    start=dt1, end=dt2)
+                break
+            except:
+                continue
+
+        if temp.empty is True:
+            print('Empresa não encontrada em {tentativas} tentativas.')
             continue
 
         temp.insert(0, 'empresa', empresa)

@@ -42,11 +42,11 @@ def converte_datetime(data):
 
 
 def transforma_data(data):
-    """Transforma duas datas, caso invalidas.
+    """Transforma uma data, para bater a um intervalo.
 
-    @param dt1: data inicial
-    @param dt2: data final
-    @return: dt1, dt2 OU erro
+    A data deve existir e ser maior ou igual a 01/01/2000.
+    @param data: datetime
+    @return: data
     """
     if data is None:
         data = dt.datetime.today()
