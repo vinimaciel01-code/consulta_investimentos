@@ -17,7 +17,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
 from investimentos.utils.arquivo import download_concluido
-from investimentos.utils.data_functions import converte_datetime
+import investimentos.utils.data_functions as data_funcions
 
 
 def consulta_posicao(path_download, dt1, dt2):
@@ -29,15 +29,11 @@ def consulta_posicao(path_download, dt1, dt2):
     @param dt2: data final da procura dos dados
     Return: dados da posição, dados das movimentações
     """
-    dt1 = converte_datetime(dt1)
-    if dt1 == 'Erro':
-        return "Erro na data de início. Formato 'DD/MM/AAAA'"
+    dt1 = data_funcions.transforma_data(dt1)
+    dt2 = data_funcions.transforma_data(dt2)
+
     if dt1 < dt.datetime(2019, 11, 1):
         dt1 = dt.datetime(2019, 11, 1)
-
-    dt2 = converte_datetime(dt2)
-    if dt2 == 'Erro':
-        return "Erro na data de fim. Formato 'DD/MM/AAAA'"
     if dt2 >= dt.datetime.today():
         dt2 = dt.datetime.today() + dt.timedelta(days=-1)
 

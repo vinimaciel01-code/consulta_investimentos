@@ -5,7 +5,7 @@ Pode ser ações, FII, stocks, Reits, títulos. etc.
 """
 import pandas as pd
 from pandas_datareader import data as web
-from investimentos.utils.data_functions import converte_datetime
+import investimentos.utils.data_functions as data_functions
 
 
 def consulta_cotacoes(empresas, dt1, dt2):
@@ -15,13 +15,8 @@ def consulta_cotacoes(empresas, dt1, dt2):
     @dt1: data inicial da consulta
     @dt2: data final da consulta
     """
-    dt1 = converte_datetime(dt1)
-    if dt1 == 'Erro':
-        return "Erro na data de início. Formato 'DD/MM/AAAA'"
-
-    dt2 = converte_datetime(dt2)
-    if dt2 == 'Erro':
-        return "Erro na data de fim. Formato 'DD/MM/AAAA'"
+    dt1 = data_functions.transforma_data(dt1)
+    dt2 = data_functions.transforma_data(dt2)
 
     lst = pd.DataFrame({'Date': []})
     for empresa in empresas:
@@ -41,3 +36,12 @@ def consulta_cotacoes(empresas, dt1, dt2):
     lst.sort_index(axis=0, inplace=True, ascending=False)
     lst.index.name = 'Data'
     return lst
+
+
+if __name__ == '__main__':
+
+    dt1 = '01/01/2020'
+    dt2 = '31/12/2021'
+    lista_ativos = ['IRBR3.SA', 'HGBS11.SA']
+    dados = consulta_cotacoes(lista_ativos, dt1, dt2)
+    print(dados)

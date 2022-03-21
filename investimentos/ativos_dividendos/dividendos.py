@@ -35,6 +35,9 @@ def consulta_dividendos(empresas, dt1, dt2):
     dados_yahoo = dados_yahoo.rename(
         columns={'empresa': 'Código', 'action': 'Tipo', 'value': 'Valor'}
     )
+    dados_yahoo['Código'] = [
+        x.replace('.SA', '') for x in dados_yahoo['Código']
+    ]
 
     # dados de eventos dos FII, na B3
     dados_b3 = b3_site_fii(empresas)
@@ -66,7 +69,9 @@ def consulta_dividendos(empresas, dt1, dt2):
     ]
 
     # reune
-    dados_dividendos = pd.concat([dados_yahoo, dados_b3])
+    dados_dividendos = pd.concat(
+        [dados_yahoo, dados_b3], axis=0, ignore_index=True
+    )
 
     return dados_dividendos
 
@@ -209,9 +214,11 @@ def b3_site_fii(empresas):
     driver.quit()
     return dados
 
-# import datetime as dt
-# if __name__ == '__main__':
-#     empresas = ['MDIA3.SA', 'HGBS11.SA', 'AAPL']
-#     dt1 = dt.datetime(2020, 1, 1)
-#     dt2 = dt.datetime.today()
-#     lista = yahoo_dividendos(empresas, dt1, dt2)
+
+if __name__ == '__main__':
+
+    dt1 = '01/01/2020'
+    dt2 = '31/12/2021'
+    empresas = ['IRBR3.SA', 'HGBS11.SA']
+    dados = consulta_dividendos(empresas, dt1, dt2)
+    print(dados)
