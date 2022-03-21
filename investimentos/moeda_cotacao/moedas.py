@@ -24,6 +24,8 @@ def consulta_moedas(valor, moeda_base, moeda_destino, dt1=None, dt2=None):
     @return: pd.DataFrame
     """
     # valida datas
+    if dt1 is None:
+        dt1 = dt.datetime.today()
     dt1 = data_functions.transforma_data(dt1)
     dt2 = data_functions.transforma_data(dt2)
 

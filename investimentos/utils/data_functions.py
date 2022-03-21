@@ -50,7 +50,7 @@ def transforma_data(data):
     """
     if data is None:
         data = dt.datetime.today()
-        return dt1
+        return data
 
     data = converte_datetime(data)
 
