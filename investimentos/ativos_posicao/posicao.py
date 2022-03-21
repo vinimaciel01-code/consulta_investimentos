@@ -56,7 +56,10 @@ def consulta_posicao(path_download, dt1, dt2):
     # que clica em qualque opcao, continua na tela
     # padrao anterior
 
-    locator = (By.XPATH, "//button[contains(text(), 'Ir para Extrato de Posição')]")
+    locator = (
+        By.XPATH,
+        "//button[contains(text(), 'Ir para Extrato de Posição')]",
+    )
     while True:
         try:
             driver.find_element(*locator)
@@ -67,7 +70,10 @@ def consulta_posicao(path_download, dt1, dt2):
 
     # Navega para a pagina central (que contém as abas)
     # Utiliza a aba de posição
-    locator = (By.XPATH, "//button[contains(text(), 'Ir para Extrato de Posição')]")
+    locator = (
+        By.XPATH,
+        "//button[contains(text(), 'Ir para Extrato de Posição')]",
+    )
     tag = driver.find_element(*locator)
     tag.click()
 
@@ -96,7 +102,7 @@ def scrap_posicao(driver):
     # navegacao para a aba de movimentação
     locator = (By.ID, 'Posição')
     wdw.until(ec.element_to_be_clickable(locator)).click()
-    
+
     # baixa todas as tabelas
     locator = (By.XPATH, "//div[@class='b3i-tabela-conteudo__tabela']")
     wdw.until(ec.element_to_be_clickable(locator))

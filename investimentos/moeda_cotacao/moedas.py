@@ -24,7 +24,8 @@ def consulta_moedas(valor, moeda_base, moeda_destino, dt1=None, dt2=None):
     @return: pd.DataFrame
     """
     # valida datas
-    dt1, dt2 = data_functions.valida_duas_datas(dt1, dt2)
+    dt1 = data_functions.transforma_data(dt1)
+    dt2 = data_functions.transforma_data(dt2)
 
     # valida: moeda informadas
     moeda_base = valida_moeda(moeda_base)

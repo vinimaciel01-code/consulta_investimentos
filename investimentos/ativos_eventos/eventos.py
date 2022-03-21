@@ -178,15 +178,11 @@ def b3_site_fii(empresas):
         driver.execute_script('arguments[0].click();', elemento)
 
         # Navega para a aba de eventos corporativos
-        locator = (
-            By.XPATH,
-            ''.join(
-                (
-                    '//div[@id="divContainerIframeB3"]//',
-                    'a[contains(text(), "Eventos Corporativos")]',
-                )
-            ),
-        )
+        # Melhoria: try except caso nao carregue os eventos.
+        # pode clicar em outra aba e voltar. Umas 3x
+        locator = (By.XPATH,
+                   ''.join(('//div[@id="divContainerIframeB3"]//',
+                            'a[contains(text(), "Eventos Corporativos")]')))
         elemento = wdw.until(ec.element_to_be_clickable(locator))
         driver.execute_script('arguments[0].click();', elemento)
 
