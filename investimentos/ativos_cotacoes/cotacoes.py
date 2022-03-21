@@ -20,6 +20,7 @@ def consulta_cotacoes(empresas, dt1, dt2):
 
     lst = pd.DataFrame({'Date': []})
     for empresa in empresas:
+        print(empresa)
         try:
             temp = web.DataReader(
                 empresa, data_source='yahoo', start=dt1, end=dt2
@@ -42,6 +43,59 @@ if __name__ == '__main__':
 
     dt1 = '01/01/2020'
     dt2 = '31/12/2021'
-    lista_ativos = ['IRBR3.SA', 'HGBS11.SA']
+    lista_ativos = [
+        'ABEV3.SA',
+        'ARZZ3.SA',
+        'EGIE3.SA',
+        'EZTC3.SA',
+        'FLRY3.SA',
+        'HYPE3.SA',
+        'IRBR3.SA',
+        'ITUB3.SA',
+        'LREN3.SA',
+        'MDIA3.SA',
+        'MULT3.SA',
+        'PSSA3.SA',
+        'RADL3.SA',
+        'WEGE3.SA',
+        'XPBR31.SA',
+        'YDUQ3.SA',
+        'GGRC11.SA',
+        'HGBS11.SA',
+        'HGLG11.SA',
+        'HGRE11.SA',
+        'HGRU11.SA',
+        'KNRI11.SA',
+        'RBVA11.SA',
+        'VISC11.SA',
+        'XPLG11.SA',
+        'XPML11.SA',
+        'AMT',
+        'AVB',
+        'DLR',
+        'EQIX',
+        'ESS',
+        'EXR',
+        'O',
+        'ONL',
+        'PLD',
+        'PSA',
+        'STOR',
+        'TRNO',
+        'AAPL',
+        'ADBE',
+        'AMZN',
+        'ASML',
+        'COST',
+        'DIS',
+        'FAST',
+        'GOOGL',
+        'JNJ',
+        'JPM',
+        'MA',
+        'MSFT',
+        'NVDA',
+        'V',
+    ]
     dados = consulta_cotacoes(lista_ativos, dt1, dt2)
     print(dados)
