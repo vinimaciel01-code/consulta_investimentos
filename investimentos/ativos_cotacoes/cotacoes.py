@@ -23,7 +23,7 @@ def consulta_cotacoes(empresas, dt1, dt2):
         print(empresa)
 
         temp = pd.DataFrame({})
-        for tentativas in range(1,4):
+        for tentativas in range(1, 4):
             try:
                 temp = web.DataReader(
                     empresa, data_source='yahoo',
@@ -33,7 +33,7 @@ def consulta_cotacoes(empresas, dt1, dt2):
                 continue
 
         if temp.empty is True:
-            print('Empresa não encontrada em {tentativas} tentativas.')
+            print(f'Empresa não encontrada em {tentativas} tentativas.')
             continue
 
         temp.rename(columns={'Adj Close': empresa}, inplace=True)

@@ -27,56 +27,59 @@ def consulta_eventos(empresas, dt1, dt2):
     @dt2: data final da consulta
     @return: pd.DataFrame
     """
-    # dados de eventos do yahoo
-    # erro nos dados dos FII
+    # Procura primeiro todos no Yahoo Finance
     dados_yahoo = yahoo_eventos(empresas, dt1, dt2)
-    dados_yahoo = dados_yahoo.rename(
-        columns={'empresa': 'Código', 'action': 'Tipo', 'value': 'Valor'}
-    )
-    dados_yahoo['Código'] = [
-        x.replace('.SA', '') for x in dados_yahoo['Código']
-    ]
 
-    # dados de eventos dos FII, na B3
+    if dados_yahoo.empty is False:
+        dados_yahoo = dados_yahoo.rename(
+            columns={'empresa': 'Código', 'action': 'Tipo', 'value': 'Valor'})
+        dados_yahoo['Código'] = [
+            x.replace('.SA', '') for x in dados_yahoo['Código']
+            ]
+
+    # Procura apenas os FII na B3
     dados_b3 = b3_site_fii(empresas)
-    dados_b3 = dados_b3.rename(
-        columns={
-            'Empresa': 'Código',
-            'Proventos': 'Tipo',
-            'Deliberado em': 'Deliberado',
-            'Negócios com até': 'Negociado',
-            'Início de Pagamento': 'Pagamento',
-            'Relativo a': 'Período',
-            'Valor (R$)': 'Valor',
-            'Código ISIN': 'ISIN',
-            'Observações': 'obs',
-        }
-    )
-    dados_b3 = dados_b3[
-        [
-            'Código',
-            'Tipo',
-            'Deliberado',
-            'Negociado',
-            'Pagamento',
-            'Período',
-            'Valor',
-            'ISIN',
-            'obs',
+
+    if dados_b3.empty is False:
+        
+        dados_b3 = dados_b3.rename(
+            columns={
+                'Empresa': 'Código',
+                'Proventos': 'Tipo',
+                'Deliberado em': 'Deliberado',
+                'Negócios com até': 'Negociado',
+                'Início de Pagamento': 'Pagamento',
+                'Relativo a': 'Período',
+                'Valor (R$)': 'Valor',
+                'Código ISIN': 'ISIN',
+                'Observações': 'obs',
+            }
+        )
+        dados_b3 = dados_b3[
+            [
+                'Código',
+                'Tipo',
+                'Deliberado',
+                'Negociado',
+                'Pagamento',
+                'Período',
+                'Valor',
+                'ISIN',
+                'obs',
+            ]
         ]
-    ]
-    dados_b3['Deliberado'] = pd.to_datetime(
-        dados_b3['Deliberado'], dayfirst=True
-    )
-    dados_b3['Negociado'] = pd.to_datetime(
-        dados_b3['Negociado'], dayfirst=True
-    )
-    dados_b3['Pagamento'] = pd.to_datetime(
-        dados_b3['Pagamento'], dayfirst=True
-    )
-    dados_b3['Valor'] = list(
-        map(float, dados_b3['Valor'].str.replace(',', '.'))
-    )
+        dados_b3['Deliberado'] = pd.to_datetime(
+            dados_b3['Deliberado'], dayfirst=True
+        )
+        dados_b3['Negociado'] = pd.to_datetime(
+            dados_b3['Negociado'], dayfirst=True
+        )
+        dados_b3['Pagamento'] = pd.to_datetime(
+            dados_b3['Pagamento'], dayfirst=True
+        )
+        dados_b3['Valor'] = list(
+            map(float, dados_b3['Valor'].str.replace(',', '.'))
+        )
 
     # reune
     dados_dividendos = pd.concat(
@@ -97,11 +100,20 @@ def yahoo_eventos(empresas, dt1, dt2):
     dt1 = converte_datetime(dt1)
     dt2 = converte_datetime(dt2)
 
-    lst = pd.DataFrame({})
+    lista_empresas = []
     for empresa in empresas:
+        if '11' not in empresa:
+            lista_empresas.append(empresa)
+    
+    if len(lista_empresas) == 0:
+        return pd.DataFrame({})
+
+    lst = pd.DataFrame({})
+    for empresa in lista_empresas:
+        print(empresa)
 
         temp = pd.DataFrame({})
-        for tentativas in range(1,4):
+        for tentativas in range(1, 4):
             try:
                 temp = web.DataReader(
                     empresa, data_source='yahoo-actions',
@@ -111,11 +123,11 @@ def yahoo_eventos(empresas, dt1, dt2):
                 continue
 
         if temp.empty is True:
-            print('Empresa não encontrada em {tentativas} tentativas.')
+            print(f'Empresa não encontrada em {tentativas} tentativas.')
             continue
 
         temp.insert(0, 'empresa', empresa)
-        lst = pd.concat([temp, lst], axis=0)
+        lst = pd.concat([lst, temp], axis=0)
 
     lst.index.name = 'Data'
     return lst
@@ -132,10 +144,10 @@ def b3_site_fii(empresas):
         if '11' in empresa:
             lista_empresas.append(empresa)
 
-    # inicializa driver
     if len(lista_empresas) == 0:
-        return []
+        return pd.DataFrame({})
 
+    # inicializa driver
     driver = webdriver.Chrome()  # add: catch erro de drive
     driver.maximize_window()
     wdw = WebDriverWait(driver, 30000)
@@ -232,6 +244,6 @@ if __name__ == '__main__':
 
     dt1 = '01/01/2020'
     dt2 = '31/12/2021'
-    empresas = ['IRBR3.SA', 'HGBS11.SA']
+    empresas = ['ABEV3.SA', 'HGBS11.SA']
     dados = consulta_eventos(empresas, dt1, dt2)
     print(dados)
