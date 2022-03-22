@@ -41,7 +41,7 @@ def consulta_eventos(empresas, dt1, dt2):
     dados_b3 = b3_site_fii(empresas)
 
     if dados_b3.empty is False:
-        
+
         dados_b3 = dados_b3.rename(
             columns={
                 'Empresa': 'Código',
@@ -104,7 +104,7 @@ def yahoo_eventos(empresas, dt1, dt2):
     for empresa in empresas:
         if '11' not in empresa:
             lista_empresas.append(empresa)
-    
+
     if len(lista_empresas) == 0:
         return pd.DataFrame({})
 
@@ -112,18 +112,20 @@ def yahoo_eventos(empresas, dt1, dt2):
     for empresa in lista_empresas:
         print(empresa)
 
-        temp = pd.DataFrame({})
-        for tentativas in range(1, 4):
+        for num in range(1, 4):
             try:
+                erro = False
+                temp = pd.DataFrame({})
                 temp = web.DataReader(
                     empresa, data_source='yahoo-actions',
                     start=dt1, end=dt2)
                 break
             except:
+                erro = True
                 continue
 
-        if temp.empty is True:
-            print(f'Empresa não encontrada em {tentativas} tentativas.')
+        if erro is True:
+            print('Empresa não encontrada.')
             continue
 
         temp.insert(0, 'empresa', empresa)
@@ -244,6 +246,59 @@ if __name__ == '__main__':
 
     dt1 = '01/01/2020'
     dt2 = '31/12/2021'
-    empresas = ['ABEV3.SA', 'HGBS11.SA']
+    empresas = [
+        'ABEV3.SA',
+        'ARZZ3.SA',
+        'EGIE3.SA',
+        'EZTC3.SA',
+        'FLRY3.SA',
+        'HYPE3.SA',
+        'IRBR3.SA',
+        'ITUB3.SA',
+        'LREN3.SA',
+        'MDIA3.SA',
+        'MULT3.SA',
+        'PSSA3.SA',
+        'RADL3.SA',
+        'WEGE3.SA',
+        'XPBR31.SA',
+        'YDUQ3.SA',
+        'GGRC11.SA',
+        'HGBS11.SA',
+        'HGLG11.SA',
+        'HGRE11.SA',
+        'HGRU11.SA',
+        'KNRI11.SA',
+        'RBVA11.SA',
+        'VISC11.SA',
+        'XPLG11.SA',
+        'XPML11.SA',
+        'AMT',
+        'AVB',
+        'DLR',
+        'EQIX',
+        'ESS',
+        'EXR',
+        'O',
+        'ONL',
+        'PLD',
+        'PSA',
+        'STOR',
+        'TRNO',
+        'AAPL',
+        'ADBE',
+        'AMZN',
+        'ASML',
+        'COST',
+        'DIS',
+        'FAST',
+        'GOOGL',
+        'JNJ',
+        'JPM',
+        'MA',
+        'MSFT',
+        'NVDA',
+        'V',
+    ]
     dados = consulta_eventos(empresas, dt1, dt2)
     print(dados)

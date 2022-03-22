@@ -89,16 +89,23 @@ def yahoo_dividendos(empresas, dt1, dt2):
 
     lst = pd.DataFrame({})
     for empresa in empresas:
+        print(empresas)
 
-        temp = pd.DataFrame({})
-        for tentativas in range(1,4):
+        for num in range(1, 4):
             try:
+                erro = False
+                temp = pd.DataFrame({})
                 temp = web.DataReader(
                     empresa, data_source='yahoo-dividends',
                     start=dt1, end=dt2)
                 break
             except:
+                erro = True
                 continue
+
+        if erro is True:
+            print('Empresa não encontrada.')
+            continue
 
         temp.insert(0, 'empresa', empresa)
         lst = pd.concat([temp, lst], axis=0)
