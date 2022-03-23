@@ -3,7 +3,6 @@ Acessa a área de investidor do site da B3 (https://www.investidor.b3.com.br/).
 
 Faz o login manualmente e baixa as informações de todos os ativos
 """
-
 import datetime as dt
 import os
 import warnings
@@ -76,6 +75,13 @@ def consulta_posicao(path_download, dt1, dt2):
     )
     tag = driver.find_element(*locator)
     tag.click()
+
+    # botao aceitar cookies
+    try: 
+        locator = (By.ID, 'onetrust-accept-btn-handler')
+        wdw.until(ec.element_to_be_clickable(locator)).click()
+    except: 
+        pass
 
     # dados de posição
     dados_pos = scrap_posicao(driver)
@@ -166,6 +172,7 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
     dt_max = dt1
 
     while True:
+        #ERRO DE ACHAR UM OBJETO 
 
         # set datas: A procura é limitada a 365 dias
         if dt_max == dt2:
@@ -174,6 +181,9 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
             dt_max = dt_min + dt.timedelta(days=365)
         else:
             dt_max = dt2
+
+        print(dt_min)
+        print(dt_max)
 
         # navegação no pop-up de filtros
         locator = (By.XPATH, '//div[@class="b3-filtrar"]/button')
