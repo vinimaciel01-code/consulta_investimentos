@@ -168,22 +168,22 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
     wdw.until(ec.element_to_be_clickable(locator)).click()
 
     dados_mov = pd.DataFrame({})
-    dt_min = dt1
-    dt_max = dt1
+    dt_min = dt1 - dt.timedelta(days=1)
+    dt_max = dt_min
 
     while True:
-        #ERRO DE ACHAR UM OBJETO 
 
-        # set datas: A procura é limitada a 365 dias
-        if dt_max == dt2:
+        # Saida
+        if (dt_max - dt2).days == 0:
             break
-        if (dt2 - dt_min).days > 365:
+
+        # Atualiza datas
+        dt_min = dt_max + dt.timedelta(days=1)
+
+        if (dt2 - dt_min).days > 365:            
             dt_max = dt_min + dt.timedelta(days=365)
         else:
             dt_max = dt2
-
-        print(dt_min)
-        print(dt_max)
 
         # navegação no pop-up de filtros
         locator = (By.XPATH, '//div[@class="b3-filtrar"]/button')
@@ -250,3 +250,4 @@ if __name__ == '__main__':
     dt1 = dt.datetime(2019, 11, 1)
     dt2 = dt.datetime(2020, 12, 31)
     path_download = r'C:\Users\vinim\Downloads'
+    consulta_posicao(path_download, dt1, dt2)
