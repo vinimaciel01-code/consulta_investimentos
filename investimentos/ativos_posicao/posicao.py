@@ -168,9 +168,14 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
     wdw.until(ec.element_to_be_clickable(locator)).click()
 
     dados_mov = pd.DataFrame({})
+    
+    # ajusta na data dt2, que tem que ser menor que o dia de hoje
+    if dt2 == dt.datetime.today():
+        dt2 = dt2 - dt.timedelta(days=1)
+
     dt_min = dt1 - dt.timedelta(days=1)
     dt_max = dt_min
-
+    
     while True:
 
         # Saida
@@ -248,6 +253,6 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
 if __name__ == '__main__':
 
     dt1 = dt.datetime(2019, 11, 1)
-    dt2 = dt.datetime(2020, 12, 31)
+    dt2 = dt.datetime.today()
     path_download = r'C:\Users\vinim\Downloads'
     consulta_posicao(path_download, dt1, dt2)

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "investimentos"
-version = "1.7.2"
+version = "1.7.3"
 description = "Baixa infos diversas de ativos financeiros."
 authors = ["Vinicius Maciel <vinimaciel01@gmail.com>"]
 
