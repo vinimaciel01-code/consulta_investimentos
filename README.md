@@ -41,6 +41,8 @@ Sendo que:
 `dados_moedas = consulta_moedas(valor, moeda_base, moeda_destino, dt1=None, dt2=None)`
 
 Sendo que:
+- valor: quantidade de moedas base que quero converter)
 - moeda_base: código da moeda que quero converter (Ex: 'BRL')
 - moeda_destino: moeda para a qual quero converter (Ex.: 'USD')
-- valor: quantidade de moedas base que quero converter)
+- dt1: data inicial da consulta
+- dt2: data final da consulta
