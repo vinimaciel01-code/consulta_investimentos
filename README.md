@@ -21,7 +21,9 @@ Também existe uma função que navega pela área privada do investidor na B3, p
 ## Como usar
 
 Existe uma função para cada funcionalidade descrita
+
 `import investimentos`
+
 `dados_cotacoes = investimentos.consulta_cotacoes(empresas, dt1, dt2)`
 `dados_dividendos = consulta_dividendos(empresas, dt1, dt2)`
 `dados_eventos = consulta_eventos(empresas, dt1, dt2)`
