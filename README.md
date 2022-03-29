@@ -25,16 +25,22 @@ Existe uma função para cada funcionalidade descrita
 `import investimentos`
 
 `dados_cotacoes = investimentos.consulta_cotacoes(empresas, dt1, dt2)`
+
 `dados_dividendos = consulta_dividendos(empresas, dt1, dt2)`
+
 `dados_eventos = consulta_eventos(empresas, dt1, dt2)`
+
 `dados_posicao = consulta_posicao(path_download, dt1, dt2)`
-`dados_moedas = consulta_moedas(valor, moeda_base, moeda_destino, dt1=None, dt2=None)`
 
 Sendo que:
 - Empresas: lista de empresas a fazer a consulta
 - dt1: data inicial da consulta
 - dt2: data final da consulta
 - path_download: path_download: caminho completo da pasta de downloads (Ex.: C:/user/fulano/downloads)
+
+`dados_moedas = consulta_moedas(valor, moeda_base, moeda_destino, dt1=None, dt2=None)`
+
+Sendo que:
 - moeda_base: código da moeda que quero converter (Ex: 'BRL')
 - moeda_destino: moeda para a qual quero converter (Ex.: 'USD')
 - valor: quantidade de moedas base que quero converter)
