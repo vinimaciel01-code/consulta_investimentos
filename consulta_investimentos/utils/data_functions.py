@@ -24,50 +24,51 @@ def converte_datetime(data):
     @param data: string ou datetime formatada
     @return: dt.datetime
     """
-    if isinstance(data, dt.datetime):
-        return data
+    if valida(data):
+        if isinstance(data, dt.datetime):
+            return data
+        if isinstance(data, dt.date):
+            return dt.datetime.combine(data, dt.datetime.min.time())
 
-    if isinstance(data, dt.date):
-        return dt.datetime.combine(data, dt.datetime.min.time())
+    if data is None or data == '':
+        return
 
     if isinstance(data, str):
         try:
             return dt.datetime.strptime(data, '%d/%m/%Y')
         except Exception as erro:
             raise ValueError(
-                f'Data "{data}" invalida. Erro ({erro.__class__})'
+                f'Data "{data}" com formato inválido. invalida. Erro ({erro.__class__})'
             ) from erro
     else:
         raise ValueError('Erro: nao se encaixou nos casos especificados.')
 
 
 def transforma_data(data):
-    """Transforma uma data, para bater a um intervalo.
+    """Transforma uma data e a limita entre jan00 e hoje.
 
     A data deve existir e ser maior ou igual a 01/01/2000.
     @param data: datetime
     @return: data
     """
-    if data is None:
-        data = dt.datetime.today()
-        return data
-
     data = converte_datetime(data)
 
-    if data < dt.datetime(2000, 1, 1):
-        data = dt.datetime(2000, 1, 1)
+    if data is None:
+        return None
 
     if data > dt.datetime.today():
-        data = dt.datetime.today()
+        return dt.datetime.today()
+
+    if data < dt.datetime(2000, 1, 1):
+        return dt.datetime(2000, 1, 1)
 
     return data
 
 
 if __name__ == '__main__':
 
-    dt1 = dt.datetime(2020, 1, 1)
-    dt2 = dt.datetime(2022, 1, 1)
+    data = ''
 
-    print(valida(dt1))
-    print(isinstance(converte_datetime(dt1), dt.datetime))
-    print(transforma_data(dt1))
+    print(valida(data))
+    print(converte_datetime(data))
+    print(transforma_data(data))

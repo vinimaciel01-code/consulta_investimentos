@@ -15,8 +15,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from investimentos.utils.arquivo import download_concluido
-import investimentos.utils.data_functions as data_funcions
+from consulta_investimentos.utils.arquivo import download_concluido
+from consulta_investimentos.utils import data_functions
 
 
 def consulta_posicao(path_download, dt1, dt2):
@@ -28,8 +28,11 @@ def consulta_posicao(path_download, dt1, dt2):
     @param dt2: data final da procura dos dados
     Return: dados da posição, dados das movimentações
     """
-    dt1 = data_funcions.transforma_data(dt1)
-    dt2 = data_funcions.transforma_data(dt2)
+    dt1 = data_functions.transforma_data(dt1)
+    dt2 = data_functions.transforma_data(dt2)
+    if dt1 > dt2:
+        print('Data de início maior que data de fim')
+        return pd.DataFrame()
 
     if dt1 < dt.datetime(2019, 11, 1):
         dt1 = dt.datetime(2019, 11, 1)
@@ -161,6 +164,12 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
     @param dt1: data inicial da procura dos dados
     @param dt2: data final da procura dos dados
     """
+    dt1 = data_functions.transforma_data(dt1)
+    dt2 = data_functions.transforma_data(dt2)
+    if dt1 > dt2:
+        print('Data de início maior que data de fim')
+        return pd.DataFrame()
+
     wdw = WebDriverWait(driver, 15)
 
     # navegacao para a aba de movimentação

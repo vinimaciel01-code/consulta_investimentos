@@ -5,24 +5,33 @@ Pode ser ações, FII, stocks, Reits, títulos. etc.
 """
 import pandas as pd
 from pandas_datareader import data as web
-import investimentos.utils.data_functions as data_functions
+
+from consulta_investimentos.utils import data_functions
 
 
 def consulta_cotacoes(empresas, dt1, dt2):
     """Consulta às cotações pela API do yahoo Finance.
 
     @empresas: lista de empresas (Tickers). Brasileiras devem ter '.SA'.
-    @dt1: data inicial da consulta
-    @dt2: data final da consulta
+    @dt1: data inicial da consulta (dd/mm/aaaa)
+    @dt2: data final da consulta (dd/mm/aaaa)
     """
     dt1 = data_functions.transforma_data(dt1)
     dt2 = data_functions.transforma_data(dt2)
+    if dt1 is None:
+        print('Data de início Vazia')
+        return pd.DataFrame()
+    if dt2 is None:
+        dt2 = dt1
+    if dt1 > dt2:
+        print('Data de início maior que data de fim')
+        return pd.DataFrame()
 
     lst = pd.DataFrame({'Date': []})
     for empresa in empresas:
         print(empresa)
 
-        for num in range(1, 4):
+        for _ in range(1, 4):
             try:
                 erro = False
                 temp = pd.DataFrame({})
@@ -47,64 +56,8 @@ def consulta_cotacoes(empresas, dt1, dt2):
     lst.index.name = 'Data'
     return lst
 
-
 if __name__ == '__main__':
 
-    dt1 = '01/01/2020'
+    empresas = ['IRBR3.SA', 'HGBS11.SA', 'V', 'STOR']
+    dt1 = ''
     dt2 = '31/12/2021'
-    lista_ativos = [
-        'ABEV3.SA',
-        'ARZZ3.SA',
-        'EGIE3.SA',
-        'EZTC3.SA',
-        'FLRY3.SA',
-        'HYPE3.SA',
-        'IRBR3.SA',
-        'ITUB3.SA',
-        'LREN3.SA',
-        'MDIA3.SA',
-        'MULT3.SA',
-        'PSSA3.SA',
-        'RADL3.SA',
-        'WEGE3.SA',
-        'XPBR31.SA',
-        'YDUQ3.SA',
-        'GGRC11.SA',
-        'HGBS11.SA',
-        'HGLG11.SA',
-        'HGRE11.SA',
-        'HGRU11.SA',
-        'KNRI11.SA',
-        'RBVA11.SA',
-        'VISC11.SA',
-        'XPLG11.SA',
-        'XPML11.SA',
-        'AMT',
-        'AVB',
-        'DLR',
-        'EQIX',
-        'ESS',
-        'EXR',
-        'O',
-        'ONL',
-        'PLD',
-        'PSA',
-        'STOR',
-        'TRNO',
-        'AAPL',
-        'ADBE',
-        'AMZN',
-        'ASML',
-        'COST',
-        'DIS',
-        'FAST',
-        'GOOGL',
-        'JNJ',
-        'JPM',
-        'MA',
-        'MSFT',
-        'NVDA',
-        'V',
-    ]
-    dados = consulta_cotacoes(lista_ativos, dt1, dt2)
-    print(dados)

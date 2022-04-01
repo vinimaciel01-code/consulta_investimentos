@@ -1,3 +1,3 @@
-from investimentos.utils.append import *
-from investimentos.utils.arquivo import *
-from investimentos.utils.data_functions import *
+from consulta_investimentos.utils.append import *
+from consulta_investimentos.utils.arquivo import *
+from consulta_investimentos.utils.data_functions import *

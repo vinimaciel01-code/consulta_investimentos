@@ -9,11 +9,11 @@ import datetime as dt
 import pandas as pd
 import requests
 
-import investimentos.utils.data_functions as data_functions
-from investimentos.moeda_cotacao.valida_moeda import valida_moeda
+import consulta_investimentos.utils.data_functions as data_functions
+from consulta_investimentos.moeda_cotacao.valida_moeda import valida_moeda
 
 
-def consulta_moedas(valor, moeda_base, moeda_destino, dt1=None, dt2=None):
+def consulta_moedas(moeda_base, moeda_destino, valor=1, dt1=None, dt2=None):
     """Consulta a taxa de câmbio das moedas informadas.
 
     @valor: quantidade de moedas que irei converter
@@ -24,11 +24,13 @@ def consulta_moedas(valor, moeda_base, moeda_destino, dt1=None, dt2=None):
     @return: pd.DataFrame
     """
     # valida datas
-    if dt1 is None:
-        dt1 = dt.datetime.today()
     dt1 = data_functions.transforma_data(dt1)
     dt2 = data_functions.transforma_data(dt2)
-
+    if dt1 is None:
+        dt1 = dt.datetime.today()
+    if dt2 is None:
+        dt2 = dt1
+    
     # valida: moeda informadas
     moeda_base = valida_moeda(moeda_base)
     moeda_destino = valida_moeda(moeda_destino)
@@ -89,3 +91,14 @@ def consulta_moedas(valor, moeda_base, moeda_destino, dt1=None, dt2=None):
     moeda_historico['Data'] = pd.to_datetime(moeda_historico['Data'])
 
     return moeda_historico
+
+
+if __name__ == '__main__':
+
+    moeda_base = 'USD'
+    moeda_destino = 'BRL'
+    valor=1
+    dt1='01/01/2022'
+    dt2=None
+
+    consulta_moedas(moeda_base, moeda_destino, valor, dt1, dt2)

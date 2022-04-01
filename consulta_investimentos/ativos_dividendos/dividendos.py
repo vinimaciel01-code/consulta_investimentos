@@ -16,7 +16,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from investimentos.utils.data_functions import converte_datetime
+from consulta_investimentos.utils import data_functions
 
 
 def consulta_dividendos(empresas, dt1, dt2):
@@ -29,49 +29,46 @@ def consulta_dividendos(empresas, dt1, dt2):
     @dt2: data final da consulta
     @return: pd.DataFrame
     """
-    # dados de eventos do yahoo
-    # erro nos dados dos FII
+    # Eventos da API do yahoo
     dados_yahoo = yahoo_dividendos(empresas, dt1, dt2)
-    dados_yahoo = dados_yahoo.rename(
-        columns={'empresa': 'Código', 'action': 'Tipo', 'value': 'Valor'}
-    )
-    dados_yahoo['Código'] = [
-        x.replace('.SA', '') for x in dados_yahoo['Código']
-    ]
+    
+    if dados_yahoo.empty is not True:
+        dados_yahoo = dados_yahoo.rename(
+            columns={'empresa': 'Código', 'action': 'Tipo', 'value': 'Valor'})
+        dados_yahoo['Código'] = [
+            x.replace('.SA', '') for x in dados_yahoo['Código']]
 
     # dados de eventos dos FII, na B3
     dados_b3 = b3_site_fii(empresas)
-    dados_b3 = dados_b3.rename(
-        columns={
-            'Empresa': 'Código',
-            'Proventos': 'Tipo',
-            'Deliberado em': 'Deliberado',
-            'Negócios com até': 'Negociado',
-            'Início de Pagamento': 'Pagamento',
-            'Relativo a': 'Período',
-            'Valor (R$)': 'Valor',
-            'Código ISIN': 'ISIN',
-            'Observações': 'obs',
-        }
-    )
-    dados_b3 = dados_b3[
-        [
-            'Código',
-            'Tipo',
-            'Deliberado',
-            'Negociado',
-            'Pagamento',
-            'Período',
-            'Valor',
-            'ISIN',
-            'obs',
-        ]
-    ]
+    
+    if dados_b3.empty is not True:
+        dados_b3 = dados_b3.rename(
+            columns={
+                'Empresa': 'Código',
+                'Proventos': 'Tipo',
+                'Deliberado em': 'Deliberado',
+                'Negócios com até': 'Negociado',
+                'Início de Pagamento': 'Pagamento',
+                'Relativo a': 'Período',
+                'Valor (R$)': 'Valor',
+                'Código ISIN': 'ISIN',
+                'Observações': 'obs'})
+        dados_b3 = dados_b3[
+            [
+                'Código',
+                'Tipo',
+                'Deliberado',
+                'Negociado',
+                'Pagamento',
+                'Período',
+                'Valor',
+                'ISIN',
+                'obs'
+            ]]
 
     # reune
     dados_dividendos = pd.concat(
-        [dados_yahoo, dados_b3], axis=0, ignore_index=True
-    )
+        [dados_yahoo, dados_b3], axis=0, ignore_index=True)
 
     return dados_dividendos
 
@@ -84,8 +81,16 @@ def yahoo_dividendos(empresas, dt1, dt2):
     @dt2: data final da consulta
     @return: pd.DataFrame
     """
-    dt1 = converte_datetime(dt1)
-    dt2 = converte_datetime(dt2)
+    dt1 = data_functions.transforma_data(dt1)
+    dt2 = data_functions.transforma_data(dt2)
+    if dt1 is None:
+        print('Data de início Vazia')
+        return pd.DataFrame()
+    if dt2 is None:
+        dt2 = dt1
+    if dt1 > dt2:
+        print('Data de início maior que data de fim')
+        return pd.DataFrame()
 
     lst = pd.DataFrame({})
     for empresa in empresas:
@@ -127,7 +132,7 @@ def b3_site_fii(empresas):
 
     # inicializa driver
     if len(lista_empresas) == 0:
-        return []
+        return pd.DataFrame()
 
     driver = webdriver.Chrome()  # add: catch erro de drive
     driver.maximize_window()
@@ -225,10 +230,10 @@ def b3_site_fii(empresas):
     return dados
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-    dt1 = '01/01/2020'
-    dt2 = '31/12/2021'
-    empresas = ['IRBR3.SA', 'HGBS11.SA']
-    dados = consulta_dividendos(empresas, dt1, dt2)
-    print(dados)
+#     dt1 = '01/01/2020'
+#     dt2 = '31/12/2021'
+#     empresas = ['IRBR3.SA', 'HGBS11.SA']
+#     dados = consulta_dividendos(empresas, dt1, dt2)
+#     print(dados)

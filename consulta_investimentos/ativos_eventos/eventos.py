@@ -14,7 +14,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from investimentos.utils.data_functions import converte_datetime
+from consulta_investimentos.utils import data_functions
 
 
 def consulta_eventos(empresas, dt1, dt2):
@@ -97,8 +97,16 @@ def yahoo_eventos(empresas, dt1, dt2):
     @dt2: data final da consulta
     @return: pd.DataFrame
     """
-    dt1 = converte_datetime(dt1)
-    dt2 = converte_datetime(dt2)
+    dt1 = data_functions.transforma_data(dt1)
+    dt2 = data_functions.transforma_data(dt2)
+    if dt1 is None:
+        print('Data de início Vazia')
+        return pd.DataFrame()
+    if dt2 is None:
+        dt2 = dt1
+    if dt1 > dt2:
+        print('Data de início maior que data de fim')
+        return pd.DataFrame()
 
     lista_empresas = []
     for empresa in empresas:
@@ -241,64 +249,3 @@ def b3_site_fii(empresas):
     driver.quit()
     return dados
 
-
-if __name__ == '__main__':
-
-    dt1 = '01/01/2020'
-    dt2 = '31/12/2021'
-    empresas = [
-        'ABEV3.SA',
-        'ARZZ3.SA',
-        'EGIE3.SA',
-        'EZTC3.SA',
-        'FLRY3.SA',
-        'HYPE3.SA',
-        'IRBR3.SA',
-        'ITUB3.SA',
-        'LREN3.SA',
-        'MDIA3.SA',
-        'MULT3.SA',
-        'PSSA3.SA',
-        'RADL3.SA',
-        'WEGE3.SA',
-        'XPBR31.SA',
-        'YDUQ3.SA',
-        'GGRC11.SA',
-        'HGBS11.SA',
-        'HGLG11.SA',
-        'HGRE11.SA',
-        'HGRU11.SA',
-        'KNRI11.SA',
-        'RBVA11.SA',
-        'VISC11.SA',
-        'XPLG11.SA',
-        'XPML11.SA',
-        'AMT',
-        'AVB',
-        'DLR',
-        'EQIX',
-        'ESS',
-        'EXR',
-        'O',
-        'ONL',
-        'PLD',
-        'PSA',
-        'STOR',
-        'TRNO',
-        'AAPL',
-        'ADBE',
-        'AMZN',
-        'ASML',
-        'COST',
-        'DIS',
-        'FAST',
-        'GOOGL',
-        'JNJ',
-        'JPM',
-        'MA',
-        'MSFT',
-        'NVDA',
-        'V',
-    ]
-    dados = consulta_eventos(empresas, dt1, dt2)
-    print(dados)

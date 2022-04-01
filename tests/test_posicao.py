@@ -1,5 +1,5 @@
 # import pandas as pd
-# from investimentos.ativos_posicao.posicao import consulta_posicao
+# from consulta_investimentos.ativos_posicao.posicao import consulta_posicao
 #
 # dt1 = '01/01/2020'
 # dt2 = '31/12/2021'
