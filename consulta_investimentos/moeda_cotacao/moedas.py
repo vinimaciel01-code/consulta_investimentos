@@ -30,7 +30,7 @@ def consulta_moedas(moeda_base, moeda_destino, valor=1, dt1=None, dt2=None):
         dt1 = dt.datetime.today()
     if dt2 is None:
         dt2 = dt1
-    
+
     # valida: moeda informadas
     moeda_base = valida_moeda(moeda_base)
     moeda_destino = valida_moeda(moeda_destino)
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     moeda_base = 'USD'
     moeda_destino = 'BRL'
     valor=1
-    dt1='01/01/2022'
+    dt1=None
     dt2=None
 
     consulta_moedas(moeda_base, moeda_destino, valor, dt1, dt2)

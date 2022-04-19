@@ -58,6 +58,7 @@ def consulta_cotacoes(empresas, dt1, dt2):
 
 if __name__ == '__main__':
 
-    empresas = ['IRBR3.SA', 'HGBS11.SA', 'V', 'STOR']
-    dt1 = ''
-    dt2 = '31/12/2021'
+    empresas = ['HGBS11.SA']
+    dt1 = '10/04/2022'
+    dt2 = '18/04/2022'
+    consulta_cotacoes(empresas, dt1, dt2)
