@@ -37,7 +37,7 @@ def consulta_posicao(path_download, dt1, dt2):
 
     if dt1 < dt.datetime(2019, 11, 1):
         dt1 = dt.datetime(2019, 11, 1)
-    if dt2 >= dt.datetime.today():
+    if dt2.date() >= dt.datetime.today().date():
         dt2 = dt.datetime.today() + dt.timedelta(days=-1)
 
     # Inicializa
@@ -180,7 +180,7 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
     dados_mov = pd.DataFrame({})
     
     # ajusta na data dt2, que tem que ser menor que o dia de hoje
-    if dt2 == dt.datetime.today():
+    if dt2.date() == dt.datetime.today().date():
         dt2 = dt2 - dt.timedelta(days=1)
 
     dt_min = dt1 - dt.timedelta(days=1)
