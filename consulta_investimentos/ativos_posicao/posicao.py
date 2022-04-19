@@ -14,6 +14,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 
 from consulta_investimentos.utils.arquivo import download_concluido
 from consulta_investimentos.utils import data_functions
@@ -70,21 +71,21 @@ def consulta_posicao(path_download, dt1, dt2):
         except:
             pass
 
-    # Navega para a pagina central (que contém as abas)
-    # Utiliza a aba de posição
-    locator = (
-        By.XPATH,
-        "//button[contains(text(), 'Ir para Extrato de Posição')]",
-    )
-    tag = driver.find_element(*locator)
-    tag.click()
-
     # botao aceitar cookies
     try: 
         locator = (By.ID, 'onetrust-accept-btn-handler')
         wdw.until(ec.element_to_be_clickable(locator)).click()
     except: 
         pass
+
+    # Navega para a pagina central (que contém as abas)
+    # Utiliza a aba de posição
+    locator = (By.XPATH,"//button[contains(text(), 'Ir para Extrato de Posição')]")
+    element = driver.find_element(*locator)
+        
+    actions = ActionChains(driver)
+    actions.move_to_element(element).perform()
+    driver.find_element(*locator).click()
 
     # dados de posição
     dados_pos = scrap_posicao(driver)
