@@ -12,6 +12,9 @@ import requests
 import consulta_investimentos.utils.data_functions as data_functions
 from consulta_investimentos.moeda_cotacao.valida_moeda import valida_moeda
 
+import locale
+locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+
 
 def consulta_moedas(moeda_base, moeda_destino, valor=1, dt1=None, dt2=None):
     """Consulta a taxa de câmbio das moedas informadas.

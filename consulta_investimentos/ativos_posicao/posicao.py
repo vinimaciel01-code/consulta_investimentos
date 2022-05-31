@@ -19,6 +19,9 @@ from selenium.webdriver.common.action_chains import ActionChains
 from consulta_investimentos.utils.arquivo import download_concluido
 from consulta_investimentos.utils import data_functions
 
+import locale
+locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+
 
 def consulta_posicao(path_download, dt1, dt2):
     """

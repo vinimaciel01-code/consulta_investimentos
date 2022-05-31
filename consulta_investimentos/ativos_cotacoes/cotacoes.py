@@ -8,6 +8,9 @@ from pandas_datareader import data as web
 
 from consulta_investimentos.utils import data_functions
 
+import locale
+locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+
 
 def consulta_cotacoes(empresas, dt1, dt2):
     """Consulta às cotações pela API do yahoo Finance.
