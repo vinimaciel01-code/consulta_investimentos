@@ -34,11 +34,9 @@ def consulta_eventos(empresas, dt1, dt2):
     dados_yahoo = yahoo_eventos(empresas, dt1, dt2)
 
     if dados_yahoo.empty is False:
-        dados_yahoo = dados_yahoo.rename(
-            columns={'empresa': 'Código', 'action': 'Tipo', 'value': 'Valor'})
-        dados_yahoo['Código'] = [
-            x.replace('.SA', '') for x in dados_yahoo['Código']
-            ]
+        dados_yahoo = dados_yahoo.rename(columns={'empresa': 'Código', 'action': 'Tipo', 'value': 'Valor'})
+        dados_yahoo['Código'] = [x.replace('.SA', '') for x in dados_yahoo['Código']]
+        dados_yahoo['Pagamento'] = dados_yahoo.index
 
     # Procura apenas os FII na B3
     dados_b3 = b3_site_fii(empresas)
@@ -252,3 +250,7 @@ def b3_site_fii(empresas):
     driver.quit()
     return dados
 
+
+if __name__ == '__main__':
+    
+    consulta_eventos(['HGBS11.SA'], '01/01/2020', '31/12/2021')
