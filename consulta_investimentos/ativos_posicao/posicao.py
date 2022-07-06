@@ -3,6 +3,10 @@ Acessa a área de investidor do site da B3 (https://www.investidor.b3.com.br/).
 
 Faz o login manualmente e baixa as informações de todos os ativos
 """
+
+import locale
+locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+
 import datetime as dt
 import os
 import warnings
@@ -18,9 +22,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 from consulta_investimentos.utils.arquivo import download_concluido
 from consulta_investimentos.utils import data_functions
-
-import locale
-locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 
 def consulta_posicao(path_download, dt1, dt2):
@@ -64,7 +65,7 @@ def consulta_posicao(path_download, dt1, dt2):
 
     locator = (
         By.XPATH,
-        "//button[contains(text(), 'Ir para Extrato de Posição')]",
+        "//button[contains(text(), 'Ir para posição')]",
     )
     while True:
         try:
@@ -83,7 +84,7 @@ def consulta_posicao(path_download, dt1, dt2):
 
     # Navega para a pagina central (que contém as abas)
     # Utiliza a aba de posição
-    locator = (By.XPATH,"//button[contains(text(), 'Ir para Extrato de Posição')]")
+    locator = (By.XPATH,"//button[contains(text(), 'Ir para posição')]")
     element = driver.find_element(*locator)
         
     actions = ActionChains(driver)
@@ -112,49 +113,28 @@ def scrap_posicao(driver):
     wdw = WebDriverWait(driver, 15)
     dados = pd.DataFrame({})
 
-    # navegacao para a aba de movimentação
+    # navegacao para a aba de posição
     locator = (By.ID, 'Posição')
     wdw.until(ec.element_to_be_clickable(locator)).click()
 
     # baixa todas as tabelas
-    locator = (By.XPATH, "//div[@class='b3i-tabela-conteudo__tabela']")
+    locator = (By.XPATH, "//div[@class='b3i-tabela-container']")
     wdw.until(ec.element_to_be_clickable(locator))
     tables = Bs(driver.page_source, 'html.parser').find_all('table')
 
-    # Tabela de ações
-    table = tables[0]
-    dados_acao = []
-    columns = [i.get_text(strip=True) for i in table.find_all('th')]
-    for row in table.find('tbody').find_all('tr'):
-        dados_acao.append(
-            [coluna.get_text(strip=True) for coluna in row.find_all('td')]
-        )
-    dados_acao = pd.DataFrame(dados_acao, columns=columns)
+    # Le os dados de todas tabelas e une em um só DataFrame
+    dados_posicao = pd.DataFrame({})
+    for table in tables: 
+        dados_table = []
+        columns = [i.get_text(strip=True) for i in table.find_all('th')]
+        for row in table.find('tbody').find_all('tr'):
+            dados_table.append([coluna.get_text(strip=True) for coluna in row.find_all('td')])
+        
+        dados_table = pd.DataFrame(dados_table, columns=columns)
+        dados_posicao = pd.concat([dados_posicao, dados_table])
 
-    # Formata variaveis
-    dados_acao['Valor atualizado'] = [
-        x.replace('Ver mais', '') for x in dados_acao['Valor atualizado']
-    ]
-    dados_acao = dados_acao.drop('', axis=1)
-
-    # Tabela de FII
-    table = tables[1]
-    dados_fii = []
-    columns = [i.get_text(strip=True) for i in table.find_all('th')]
-    for row in table.find('tbody').find_all('tr'):
-        dados_fii.append(
-            [coluna.get_text(strip=True) for coluna in row.find_all('td')]
-        )
-    dados_fii = pd.DataFrame(dados_fii, columns=columns)
-
-    # Formata variaveis
-    dados_fii['Valor atualizado'] = [
-        x.replace('Ver mais', '') for x in dados_fii['Valor atualizado']
-    ]
-    dados_fii = dados_fii.drop('', axis=1)
-
-    # une com a lista acumulada
-    dados = pd.concat([dados_acao, dados_fii], axis=0)
+    # Retira uma variavel 'fantasma'
+    dados_posicao = dados_posicao.drop('', axis=1)
 
     return dados
 
@@ -261,11 +241,3 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
         dt_min = dt_max + dt.timedelta(days=1)
 
     return dados_mov
-
-
-if __name__ == '__main__':
-
-    dt1 = dt.datetime(2019, 11, 1)
-    dt2 = dt.datetime.today()
-    path_download = r'C:\Users\vinim\Downloads'
-    consulta_posicao(path_download, dt1, dt2)
