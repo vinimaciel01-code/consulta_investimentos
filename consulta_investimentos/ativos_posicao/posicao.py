@@ -136,7 +136,7 @@ def scrap_posicao(driver):
     # Retira uma variavel 'fantasma'
     dados_posicao = dados_posicao.drop('', axis=1)
 
-    return dados
+    return dados_posicao
 
 
 def scrap_movimentacao(driver, path_download, dt1, dt2):
