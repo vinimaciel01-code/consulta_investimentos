@@ -133,9 +133,6 @@ def scrap_posicao(driver):
         dados_table = pd.DataFrame(dados_table, columns=columns)
         dados_posicao = pd.concat([dados_posicao, dados_table])
 
-    # Retira uma variavel 'fantasma'
-    dados_posicao = dados_posicao.drop('', axis=1)
-
     return dados_posicao
 
 
