@@ -219,6 +219,8 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
         locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-modal-download/b3-modal-drawer/div[1]/div[2]/div/div/button')
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
+        import time
+        time.sleep(2)
         download_concluido(path_download)
 
         locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-modal-download/b3-modal-drawer/div[1]/div[2]/div/div/div/button')
@@ -236,11 +238,12 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
         dt_min = dt_max + dt.timedelta(days=1)
 
     dados_mov = pd.DataFrame()
-    for arq in arquivos_baixados_list:
+    for arquivo in arquivos_baixados_list:
         
         with warnings.catch_warnings(record=True):
             warnings.simplefilter('always')
-            arquivo_novo = pd.read_excel(pasta_novato, engine='openpyxl')
+            arquivo_novo = pd.read_excel(arquivo, engine='openpyxl')
+            print(arquivo_novo)
 
         arquivo_novo['Produto'] = arquivo_novo['Produto'].str.strip()
         arquivo_novo['Código'] = arquivo_novo['Produto'].str.split(' - ', 1, expand=True)[0]

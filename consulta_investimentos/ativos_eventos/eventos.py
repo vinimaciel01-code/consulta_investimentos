@@ -30,13 +30,18 @@ def consulta_eventos(empresas, dt1, dt2):
     @dt2: data final da consulta
     @return: pd.DataFrame
     """
-    # Procura primeiro todos no Yahoo Finance
-    dados_yahoo = yahoo_eventos(empresas, dt1, dt2)
 
-    if dados_yahoo.empty is False:
-        dados_yahoo = dados_yahoo.rename(columns={'empresa': 'Código', 'action': 'Tipo', 'value': 'Valor'})
-        dados_yahoo['Código'] = [x.replace('.SA', '') for x in dados_yahoo['Código']]
-        dados_yahoo['Pagamento'] = dados_yahoo.index
+    # Base padrão
+    base = pd.DataFrame(columns={
+        'Código',
+        'Tipo',
+        'Deliberado',
+        'Negociado',
+        'Pagamento',
+        'Período',
+        'Valor',
+        'ISIN',
+        'obs'})
 
     # Procura apenas os FII na B3
     dados_b3 = b3_site_fii(empresas)
@@ -56,38 +61,40 @@ def consulta_eventos(empresas, dt1, dt2):
                 'Observações': 'obs',
             }
         )
-        dados_b3 = dados_b3[
-            [
-                'Código',
-                'Tipo',
-                'Deliberado',
-                'Negociado',
-                'Pagamento',
-                'Período',
-                'Valor',
-                'ISIN',
-                'obs',
-            ]
+        dados_b3['Deliberado'] = pd.to_datetime(dados_b3['Deliberado'], dayfirst=True)
+        dados_b3['Negociado'] = pd.to_datetime(dados_b3['Negociado'], dayfirst=True)
+        dados_b3['Pagamento'] = pd.to_datetime(dados_b3['Pagamento'], dayfirst=True)
+        dados_b3['Valor'] = list(map(float, dados_b3['Valor'].str.replace(',', '.')))
+
+        base = pd.concat([base, dados_b3], axis=0, ignore_index=True)
+
+    # Procura acoes, stocks e REITS no Yahoo Finance
+    dados_yahoo = yahoo_eventos(empresas, dt1, dt2)
+
+    if dados_yahoo.empty is False:
+        dados_yahoo = dados_yahoo.rename(columns={'empresa': 'Código', 'action': 'Tipo', 'value': 'Valor'})
+        dados_yahoo['Código'] = [x.replace('.SA', '') for x in dados_yahoo['Código']]
+        dados_yahoo['Pagamento'] = dados_yahoo.index
+
+        base = pd.concat([base, dados_yahoo], axis=0, ignore_index=True)
+
+
+    # reordena a base
+    base = base[
+        [
+            'Código',
+            'Tipo',
+            'Valor',
+            'Deliberado',
+            'Negociado',
+            'Pagamento',
+            'Período',
+            'ISIN',
+            'obs',
         ]
-        dados_b3['Deliberado'] = pd.to_datetime(
-            dados_b3['Deliberado'], dayfirst=True
-        )
-        dados_b3['Negociado'] = pd.to_datetime(
-            dados_b3['Negociado'], dayfirst=True
-        )
-        dados_b3['Pagamento'] = pd.to_datetime(
-            dados_b3['Pagamento'], dayfirst=True
-        )
-        dados_b3['Valor'] = list(
-            map(float, dados_b3['Valor'].str.replace(',', '.'))
-        )
+    ]
 
-    # reune
-    dados_dividendos = pd.concat(
-        [dados_yahoo, dados_b3], axis=0, ignore_index=True
-    )
-
-    return dados_dividendos
+    return base
 
 
 def yahoo_eventos(empresas, dt1, dt2):
@@ -249,8 +256,3 @@ def b3_site_fii(empresas):
     # encerra o driver e salva
     driver.quit()
     return dados
-
-
-if __name__ == '__main__':
-    
-    consulta_eventos(['HGBS11.SA'], '01/01/2020', '31/12/2021')
