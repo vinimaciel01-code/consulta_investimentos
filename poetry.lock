@@ -1,6 +1,6 @@
 [[package]]
 name = "appdirs"
-version = "1.4.4"
+version = "1.5.1"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false

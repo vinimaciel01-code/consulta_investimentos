@@ -24,7 +24,7 @@ from consulta_investimentos.utils.arquivo import download_concluido
 from consulta_investimentos.utils import data_functions
 
 
-def consulta_posicao(path_download, dt1, dt2):
+def consulta_posicao(path_download, dt1, dt2, login, senha):
     """
     Faz o login na área privada de investidor no site da B3.
 
@@ -50,19 +50,25 @@ def consulta_posicao(path_download, dt1, dt2):
     wdw = WebDriverWait(driver, 15)
     driver.get('https://www.investidor.b3.com.br/')
 
-    # espera aparecer o elemento da senha
+    # espera aparecer o elemento do login (CPF)
+
     locator = (By.ID, 'DOC_INPUT')
-    wdw.until(ec.element_to_be_clickable(locator))
-    print('Página carregada com sucesso')
+    elemento = wdw.until(ec.element_to_be_clickable(locator))
+
+    if login:
+        elemento.send_keys(login)
+        locator = (By.ID, 'Btn_CONTINUE')
+        wdw.until(ec.element_to_be_clickable(locator)).click()
+
+    if senha:    
+        locator = (By.ID, 'PASS_INPUT')
+        elemento = wdw.until(ec.element_to_be_clickable(locator))
+        elemento.send_keys(senha)
+    
     print('Faça o Login e responda à pergunta de segurança.')
 
-    # pausa para a senha
-    # espera o elemento surgir para continuar
-
-    # Ele abre em uma tela diferente, mas depois
-    # que clica em qualque opcao, continua na tela
-    # padrao anterior
-
+    ### pausa para responder à pergunta de segurança ###
+        
     locator = (
         By.XPATH,
         "//button[contains(text(), 'Ir para posição')]",
@@ -118,7 +124,7 @@ def scrap_posicao(driver):
     wdw.until(ec.element_to_be_clickable(locator)).click()
 
     # baixa todas as tabelas
-    locator = (By.XPATH, "//div[@class='b3i-tabela-container']")
+    locator = (By.XPATH, "//th[contains(text(), 'Produto')]")
     wdw.until(ec.element_to_be_clickable(locator))
     tables = Bs(driver.page_source, 'html.parser').find_all('table')
 
@@ -157,8 +163,6 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
     locator = (By.ID, 'Movimentação')
     wdw.until(ec.element_to_be_clickable(locator)).click()
 
-    dados_mov = pd.DataFrame({})
-    
     # ajusta na data dt2, que tem que ser menor que o dia de hoje
     if dt2.date() == dt.datetime.today().date():
         dt2 = dt2 - dt.timedelta(days=1)
@@ -166,6 +170,7 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
     dt_min = dt1 - dt.timedelta(days=1)
     dt_max = dt_min
     
+    arquivos_baixados_list = []
     while True:
 
         # Saida
@@ -181,7 +186,7 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
             dt_max = dt2
 
         # navegação no pop-up de filtros
-        locator = (By.XPATH, '//div[@class="b3-filtrar"]/button')
+        locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-tabela-filtro/div/div/button[1]')
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
         locator = (By.XPATH, "//input[@data-placeholder='Data final']")
@@ -196,45 +201,49 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
             elemento.send_keys(Keys.BACKSPACE)
         elemento.send_keys(dt_min.strftime('%d/%m/%Y'))
 
-        # volta à data final -> aplica a conferencia do campo na data inicial
-        locator = (By.XPATH, "//input[@data-placeholder='Data final']")
+        locator = (By.XPATH, "//input[@data-placeholder='Data final']") # volta à data final -> aplica a conferencia do campo na data inicial
         elemento = wdw.until(ec.element_to_be_clickable(locator)).click()
-
-        # Futuro !
-        # procurar se houve erro de data
 
         locator = (By.ID, 'botao-filtrar-movimentacao')
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
-        locator = (By.ID, 'botao-download-movimentacao')
+        # Futuro !
+        # procurar se houve erro de data
+
+        locator = (By.XPATH, '//button[@label="Baixar extrato"]')
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
-        locator = (By.XPATH, '//*[@id="botao-movimentacao-excel"]')
+        locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-modal-download/b3-modal-drawer/div[1]/div[2]/div/div/div/app-opcoes-selecao-download/label[2]/div')
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
-        locator = (By.XPATH, '//div[@class="fechar"]/button')
+        locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-modal-download/b3-modal-drawer/div[1]/div[2]/div/div/button')
+        wdw.until(ec.element_to_be_clickable(locator)).click()
+
+        download_concluido(path_download)
+
+        locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-modal-download/b3-modal-drawer/div[1]/div[2]/div/div/div/button')
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
         # ler arquivo recem baixado
-        download_concluido(path_download)
         pasta_baixados = os.listdir(path_download)
         pasta_baixados = [d for d in pasta_baixados if '.xls' in d]
-        pasta_baixados = [
-            os.path.join(path_download, d) for d in pasta_baixados
-        ]
+        pasta_baixados = [os.path.join(path_download, d) for d in pasta_baixados]
         pasta_novato = max(pasta_baixados, key=os.path.getctime)
+        
+        arquivos_baixados_list.append(pasta_novato)
 
+        # atualiza a data inicial (loop)
+        dt_min = dt_max + dt.timedelta(days=1)
+
+    dados_mov = pd.DataFrame()
+    for arq in arquivos_baixados_list:
+        
         with warnings.catch_warnings(record=True):
             warnings.simplefilter('always')
             arquivo_novo = pd.read_excel(pasta_novato, engine='openpyxl')
 
         arquivo_novo['Produto'] = arquivo_novo['Produto'].str.strip()
-        arquivo_novo['Código'] = arquivo_novo['Produto'].str.split(
-            ' - ', 1, expand=True
-        )[0]
+        arquivo_novo['Código'] = arquivo_novo['Produto'].str.split(' - ', 1, expand=True)[0]
         dados_mov = pd.concat([arquivo_novo, dados_mov], axis=0)
-
-        # atualiza a data inicial (loop)
-        dt_min = dt_max + dt.timedelta(days=1)
 
     return dados_mov
