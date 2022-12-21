@@ -3,16 +3,36 @@
 Cotação dosa listados no site do Yahoo Finance.
 Pode ser ações, FII, stocks, Reits, títulos. etc.
 """
+import locale
 import pandas as pd
 from pandas_datareader import data as web
-
+import yfinance as yf
 from consulta_investimentos.utils import data_functions
 
-import locale
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 
-def consulta_cotacoes(empresas, dt1, dt2):
+def consulta_cotacoes_yfinance(empresas):
+
+    dados = pd.DataFrame({})
+    for empresa in empresas:
+        print(empresa)
+        stock_info = yf.Ticker(empresa).info
+
+        if stock_info is None:
+            print(empresa, ' não encontrada.')
+
+        else:
+            market_price = stock_info['regularMarketPrice'] # stock_info.keys() for other properties you can explore
+            print(market_price)
+
+            dados_novos = pd.DataFrame({'ativo': empresa, 'preco':market_price}, index=[0])
+            dados = pd.concat([dados, dados_novos])
+
+    return dados
+
+
+def consulta_cotacoes_pandas(empresas, dt1, dt2):
     """Consulta às cotações pela API do yahoo Finance.
 
     @empresas: lista de empresas (Tickers). Brasileiras devem ter '.SA'.
@@ -57,12 +77,12 @@ def consulta_cotacoes(empresas, dt1, dt2):
     lst.set_index('Date', inplace=True)
     lst.sort_index(axis=0, inplace=True, ascending=False)
     lst.index.name = 'Data'
+    
     return lst
 
-if __name__ == '__main__':
 
-    empresas = ['HGBS11.SA']
-    dt1 = '10/04/2022'
-    dt2 = '18/04/2022'
-    consulta_cotacoes(empresas, dt1, dt2)
-    
+def consulta_cotacoes(empresas, dt1, dt2):
+
+    dados = consulta_cotacoes_yfinance(empresas)
+    # consulta_cotacoes_pandas(empresas, dt1, dt2)
+    return dados

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "consulta_investimentos"
-version = "3.6.1"
+version = "3.7.1"
 description = "Baixa infos diversas de ativos financeiros."
 authors = ["Vinicius Maciel <vinimaciel01@gmail.com>"]
 
@@ -8,11 +8,14 @@ authors = ["Vinicius Maciel <vinimaciel01@gmail.com>"]
 python = "^3.9"
 pandas = "^1.4.1"
 requests = "^2.27.1"
-pandas-datareader = "^0.10.0"
 selenium = "^4.1.2"
 bs4 = "^0.0.1"
 openpyxl = "^3.0.9"
 click = "^8.1.2"
+pycryptodome = "^3.16.0"
+pycryptodomex = "^3.16.0"
+yfinance = "^0.2.3"
+pandas-datareader = "^0.10.0"
 
 [tool.poetry.dev-dependencies]
 prospector = "^1.7.6"
