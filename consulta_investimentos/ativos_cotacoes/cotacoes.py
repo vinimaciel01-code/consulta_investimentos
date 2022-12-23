@@ -5,84 +5,23 @@ Pode ser ações, FII, stocks, Reits, títulos. etc.
 """
 import locale
 import pandas as pd
-from pandas_datareader import data as web
 import yfinance as yf
+
 from consulta_investimentos.utils import data_functions
 
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 
-def consulta_cotacoes_yfinance(empresas):
+def consulta_cotacoes(empresas):
 
-    dados = pd.DataFrame({})
+    empresas_string = ''
     for empresa in empresas:
-        print(empresa)
-        stock_info = yf.Ticker(empresa).info
+        empresas_string = empresas_string + empresa.lower() + ' '
 
-        if stock_info is None:
-            print(empresa, ' não encontrada.')
+    tickers = yf.Tickers(empresas_string)
 
-        else:
-            market_price = stock_info['regularMarketPrice'] # stock_info.keys() for other properties you can explore
-            print(market_price)
+    close = tickers.history(period="1mo")['Close']
+    dividendos = tickers.history(period="1mo")['Dividends']
+    splits = tickers.history(period="1mo")['Stock Splits']
 
-            dados_novos = pd.DataFrame({'ativo': empresa, 'preco':market_price}, index=[0])
-            dados = pd.concat([dados, dados_novos])
-
-    return dados
-
-
-def consulta_cotacoes_pandas(empresas, dt1, dt2):
-    """Consulta às cotações pela API do yahoo Finance.
-
-    @empresas: lista de empresas (Tickers). Brasileiras devem ter '.SA'.
-    @dt1: data inicial da consulta (dd/mm/aaaa)
-    @dt2: data final da consulta (dd/mm/aaaa)
-    """
-    dt1 = data_functions.transforma_data(dt1)
-    dt2 = data_functions.transforma_data(dt2)
-    if dt1 is None:
-        print('Data de início Vazia')
-        return pd.DataFrame()
-    if dt2 is None:
-        dt2 = dt1
-    if dt1 > dt2:
-        print('Data de início maior que data de fim')
-        return pd.DataFrame()
-
-    lst = pd.DataFrame({'Date': []})
-    for empresa in empresas:
-        print(empresa)
-
-        for _ in range(1, 4):
-            try:
-                erro = False
-                temp = pd.DataFrame({})
-                temp = web.DataReader(
-                    empresa, data_source='yahoo',
-                    start=dt1, end=dt2)
-                break
-            except:
-                erro = True
-                continue
-
-        if erro is True:
-            print('Empresa não encontrada.')
-            continue
-
-        temp.rename(columns={'Adj Close': empresa}, inplace=True)
-        temp = round(temp[empresa], 2)
-        lst = pd.merge(temp, lst, on='Date', how='outer')
-
-    lst.set_index('Date', inplace=True)
-    lst.sort_index(axis=0, inplace=True, ascending=False)
-    lst.index.name = 'Data'
-    
-    return lst
-
-
-def consulta_cotacoes(empresas, dt1, dt2):
-
-    dados = consulta_cotacoes_yfinance(empresas)
-    # consulta_cotacoes_pandas(empresas, dt1, dt2)
-    return dados
+    return close, dividendos, splits
