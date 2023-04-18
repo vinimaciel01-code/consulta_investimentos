@@ -52,12 +52,12 @@ def consulta_posicao(path_download, dt1, dt2, login, senha):
 
     # espera aparecer o elemento do login (CPF)
 
-    locator = (By.ID, 'DOC_INPUT')
+    locator = (By.ID, 'cpf_mask')
     elemento = wdw.until(ec.element_to_be_clickable(locator))
 
     if login:
         elemento.send_keys(login)
-        locator = (By.ID, 'Btn_CONTINUE')
+        locator = (By.XPATH,"/html/body/app-root/app-landing-page/div/div[2]/aside/div[1]/button")
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
     if senha:    
@@ -189,19 +189,19 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
         locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-tabela-filtro/div/div/button[1]')
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
-        locator = (By.XPATH, "//input[@data-placeholder='Data final']")
+        locator = (By.XPATH, '//*[@class="form-control input-end b3-ga-datepicker"]')
         elemento = wdw.until(ec.element_to_be_clickable(locator))
         for _ in range(10):
             elemento.send_keys(Keys.BACKSPACE)
         elemento.send_keys(dt_max.strftime('%d/%m/%Y'))
 
-        locator = (By.XPATH, "//input[@data-placeholder='Data inicial']")
+        locator = (By.XPATH, '//*[@class="form-control input-start b3-ga-datepicker"]')
         elemento = wdw.until(ec.element_to_be_clickable(locator))
         for _ in range(10):
             elemento.send_keys(Keys.BACKSPACE)
         elemento.send_keys(dt_min.strftime('%d/%m/%Y'))
 
-        locator = (By.XPATH, "//input[@data-placeholder='Data final']") # volta à data final -> aplica a conferencia do campo na data inicial
+        locator = (By.XPATH, '//*[@class="form-control input-end b3-ga-datepicker"]') # volta à data final -> aplica a conferencia do campo na data inicial
         elemento = wdw.until(ec.element_to_be_clickable(locator)).click()
 
         locator = (By.ID, 'botao-filtrar-movimentacao')
@@ -213,10 +213,10 @@ def scrap_movimentacao(driver, path_download, dt1, dt2):
         locator = (By.XPATH, '//button[@label="Baixar extrato"]')
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
-        locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-modal-download/b3-modal-drawer/div[1]/div[2]/div/div/div/app-opcoes-selecao-download/label[2]/div')
+        locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-modal-download-extrato/b3-modal-drawer/div[1]/div[2]/div/div/div/app-opcoes-selecao-download/label[2]/div')
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
-        locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-modal-download/b3-modal-drawer/div[1]/div[2]/div/div/button')
+        locator = (By.XPATH, '//*[@id="b3i-conteudo"]/app-extrato/div/div/div[3]/app-movimentacoes/app-modal-download-extrato/b3-modal-drawer/div[1]/div[2]/div/div/button')
         wdw.until(ec.element_to_be_clickable(locator)).click()
 
         import time

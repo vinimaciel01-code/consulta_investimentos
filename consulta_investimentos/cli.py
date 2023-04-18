@@ -2,8 +2,6 @@ import click
 import pandas as pd
 
 from consulta_investimentos.ativos_cotacoes.cotacoes import consulta_cotacoes
-from consulta_investimentos.ativos_dividendos.dividendos import consulta_dividendos
-from consulta_investimentos.ativos_eventos.eventos import consulta_eventos
 from consulta_investimentos.ativos_posicao.posicao import consulta_posicao
 from consulta_investimentos.moeda_cotacao.moedas import consulta_moedas
 
